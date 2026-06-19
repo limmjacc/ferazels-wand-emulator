@@ -13,8 +13,8 @@ if [[ -f "${DISK_IMAGE}" ]]; then
     rm -f "${DISK_IMAGE}"
 fi
 
-echo "==> Creating ${DISK_SIZE} Mac OS 9 disk image..."
-"${QEMU_IMG_BIN}" create -f qcow2 "${DISK_IMAGE}" "${DISK_SIZE}"
+echo "==> Creating ${DISK_SIZE} Mac OS 9 raw disk image..."
+"${QEMU_IMG_BIN}" create -f raw "${DISK_IMAGE}" "${DISK_SIZE}"
 
 echo ""
 echo "==> Created: ${DISK_IMAGE}"

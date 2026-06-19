@@ -1,5 +1,5 @@
 # Disk images — large binary files, user-provided
-disks/*.qcow2
+# macos9.img is the raw Mac OS 9 disk (raw format required — see config/qemu.conf.sh quirk #1)
 disks/*.img
 disks/*.iso
 disks/*.dmg

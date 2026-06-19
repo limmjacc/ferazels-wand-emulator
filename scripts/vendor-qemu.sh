@@ -35,8 +35,6 @@ mkdir -p "${BIN_DIR}" "${LIB_DIR}" "${SHARE_DIR}"
 # Recursively copies non-system dylibs and rewrites load paths so the binaries
 # find their libraries via @loader_path regardless of where the repo lives.
 
-declare -A BUNDLED=()
-
 bundle_dylibs() {
     local target="$1"
 
@@ -46,10 +44,10 @@ bundle_dylibs() {
     while IFS= read -r dep; do
         [[ -z "${dep}" ]] && continue
         # Skip system libraries — they're guaranteed on every macOS install
-        [[ "${dep}" == /usr/lib/* ]]    && continue
-        [[ "${dep}" == /System/* ]]     && continue
-        [[ "${dep}" == @rpath/* ]]      && continue
-        [[ "${dep}" == @loader_path/* ]] && continue
+        [[ "${dep}" == /usr/lib/* ]]         && continue
+        [[ "${dep}" == /System/* ]]          && continue
+        [[ "${dep}" == @rpath/* ]]           && continue
+        [[ "${dep}" == @loader_path/* ]]     && continue
         [[ "${dep}" == @executable_path/* ]] && continue
 
         local libname
@@ -65,9 +63,8 @@ bundle_dylibs() {
         fi
         install_name_tool -change "${dep}" "${new_ref}" "${target}" 2>/dev/null || true
 
-        # Copy and recurse if not already handled
-        if [[ -z "${BUNDLED[${libname}]+x}" ]]; then
-            BUNDLED["${libname}"]=1
+        # Copy and recurse only if not already handled (check file existence)
+        if [[ ! -f "${dest}" ]]; then
             if [[ -f "${dep}" ]]; then
                 echo "    + ${libname}"
                 cp "${dep}" "${dest}"

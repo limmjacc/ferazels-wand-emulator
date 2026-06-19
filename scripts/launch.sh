@@ -11,8 +11,11 @@ if [[ ! -f "${DISK_IMAGE}" ]]; then
 fi
 
 echo "==> Launching Mac OS 9..."
-[[ "${IS_VENDORED}" -eq 1 ]] && echo "    (using self-contained vendored QEMU)"
+[[ "${IS_VENDORED}" -eq 1 ]] && echo "    (self-contained vendored QEMU — no Homebrew required)"
 
+# No CD attached at runtime. All saves write to disks/macos9.img which
+# persists between launches and travels with the repo. See config/qemu.conf.sh
+# for full documentation of the QEMU flags used here.
 "${QEMU_BIN}" \
     "${QEMU_BASE_FLAGS[@]}" \
     -no-reboot

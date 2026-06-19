@@ -20,17 +20,41 @@ if [[ ! -f "${DISK_IMAGE}" ]]; then
 fi
 
 # ── Launch ───────────────────────────────────────────────────────────────────
+#
+# The CD is attached on ide.1 with cache=unsafe. See config/qemu.conf.sh
+# quirk #2 (explicit IDE bus) and quirk #6 (cache=unsafe on CD).
+#
+# Installation walkthrough:
+#   1. Wait ~60s for Mac OS 9 to boot from the installer CD.
+#   2. When the installer opens, click Continue — it will say "no volumes found".
+#      This is expected: the blank disk has no partition table yet.
+#   3. Do NOT run the installer yet. Instead, find Drive Setup:
+#        • Open the installer CD icon on the desktop
+#        • Navigate to Utilities → Drive Setup
+#   4. Drive Setup will list the blank disk. Select it and click Initialize.
+#      Accept the default HFS+ format. This writes an Apple Partition Map.
+#   5. Close Drive Setup. The installer will now find the formatted volume.
+#   6. Run the installer, select the new volume, and complete installation.
+#   7. When done: Special → Shut Down (NOT the red window close button).
+#      The emulator exits cleanly on shutdown and saves the disk image.
 
 echo "==> Booting from Mac OS 9 ISO..."
-echo "    Install Mac OS 9 onto 'Mac OS 9' (the blank disk)."
-echo "    When installation is complete, choose Shut Down — do not restart."
+echo ""
+echo "    IMPORTANT — read before you click anything:"
+echo "    The installer will say 'no volumes' on first open. This is normal."
+echo "    You must run Drive Setup first (on the CD under Utilities/)."
+echo "    Drive Setup will find the blank disk and initialize it."
+echo "    Then run the installer. See docs/setup-guide.md for full steps."
+echo ""
+echo "    When installation is complete: Special → Shut Down (not Restart)."
 echo ""
 
 "${QEMU_BIN}" \
     "${QEMU_BASE_FLAGS[@]}" \
-    -drive "file=${MACOS9_ISO},media=cdrom,index=2,readonly=on" \
+    -device "ide-cd,bus=ide.1,unit=0,drive=cd0" \
+    -drive  "id=cd0,file=${MACOS9_ISO},format=raw,if=none,media=cdrom,readonly=on,cache=unsafe" \
     -boot d
 
 echo ""
 echo "==> Installation session ended."
-echo "    If installation completed, run 'make launch' to boot into Mac OS 9."
+echo "    If installation completed successfully, run 'make launch'."

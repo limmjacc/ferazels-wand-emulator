@@ -88,13 +88,13 @@ The goal is to run the **original Ferazel's Wand binary** on a modern Apple Sili
 
 - **Emulator:** QEMU `qemu-system-ppc` with the `mac99` machine (Power Mac G4), running Mac OS 9
 - **Portability:** QEMU binary + all dylibs + firmware are vendored into `vendor/qemu/` — copy the repo to any ARM64 Mac and run
-- **Game files + saves:** All stored in `disks/macos9.qcow2` alongside the OS — one file holds everything
+- **Game files + saves:** All stored in `disks/macos9.img` alongside the OS — one file holds everything
 - **No gamma patch:** Uses the community no-gamma patched v1.0.3 executable for stable QEMU operation
 
 ### Usage
 
 After one-time setup, just **double-click `FerazelsWand.app`** to play. All game saves
-live inside `disks/macos9.qcow2` in this folder — they survive reboots and move with
+live inside `disks/macos9.img` in this folder — they survive reboots and move with
 the folder.
 
 ### One-time setup
@@ -104,7 +104,7 @@ Run these once in Terminal from this folder:
 ```bash
 make setup        # install QEMU via Homebrew
 make vendor       # bundle QEMU + dylibs into vendor/ — Homebrew not needed after this
-make create-disk  # create disks/macos9.qcow2
+make create-disk  # create disks/macos9.img (raw format — required for mac99 ATA)
 # place your Mac OS 9 ISO at disks/macos9.iso
 make install-os   # boot from ISO, install Mac OS 9 + the game, then Shut Down
 ```
@@ -129,13 +129,13 @@ ferazels-wand-emulator/
 ├── scripts/
 │   ├── setup.sh              ← install QEMU via Homebrew
 │   ├── vendor-qemu.sh        ← bundle QEMU + dylibs into vendor/ for portability
-│   ├── create-disk.sh        ← create blank Mac OS 9 QCOW2 disk image
+│   ├── create-disk.sh        ← create blank Mac OS 9 raw disk image
 │   ├── install-os.sh         ← boot from Mac OS 9 ISO to install
 │   └── launch.sh             ← launch Mac OS 9 (same as double-clicking the app)
 ├── vendor/
 │   └── qemu/                 ← self-contained QEMU (populated by `make vendor`, gitignored)
 ├── disks/
-│   ├── macos9.qcow2          ← Mac OS 9 + game + saves (gitignored, user-created)
+│   ├── macos9.img            ← Mac OS 9 + game + saves (gitignored, raw format)
 │   └── macos9.iso            ← Mac OS 9 installer ISO (gitignored, user-provided)
 ├── docs/
 │   ├── setup-guide.md        ← full setup walkthrough

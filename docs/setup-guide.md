@@ -1,12 +1,16 @@
 # Setup Guide
 
-This guide walks through getting Ferazel's Wand running from scratch on an Apple Silicon Mac.
+This guide walks through getting Mac OS 9 and Ferazel's Wand running from scratch
+on an Apple Silicon Mac. All steps have been validated on a MacBook Air M2 running
+QEMU 11.0.1 with Mac OS 9.2.2.
+
+---
 
 ## Prerequisites
 
 - Apple Silicon Mac (M1 / M2 / M3 / M4 or newer)
 - macOS 13 Ventura or later
-- [Homebrew](https://brew.sh) (needed once, for the initial QEMU build — not required after vendoring)
+- [Homebrew](https://brew.sh) — needed once for the initial QEMU install; not required after `make vendor`
 - A Mac OS 9 installation ISO (see [Obtaining Mac OS 9](#obtaining-mac-os-9) below)
 - The Ferazel's Wand game files (see [Obtaining the Game](#obtaining-the-game) below)
 - ~8 GB free disk space
@@ -16,12 +20,12 @@ This guide walks through getting Ferazel's Wand running from scratch on an Apple
 ## Step 1 — Install and vendor QEMU
 
 ```bash
-make setup    # installs QEMU via Homebrew
-make vendor   # copies QEMU + all dylibs into vendor/ — no Homebrew needed after this
+make setup    # installs QEMU 11 via Homebrew
+make vendor   # bundles QEMU binary + all dylibs into vendor/ for portability
 ```
 
-After `make vendor`, the `vendor/qemu/` directory is fully self-contained. You can copy
-the entire repo to any ARM64 Mac and run it without installing anything.
+After `make vendor`, `vendor/qemu/` is self-contained. Copy the entire repo to any
+ARM64 Mac and everything still works — no Homebrew, no dependencies.
 
 ---
 
@@ -31,25 +35,24 @@ the entire repo to any ARM64 Mac and run it without installing anything.
 make create-disk
 ```
 
-This creates `disks/macos9.qcow2` — a 6 GB QCOW2 disk image that will hold Mac OS 9
-and all game files. The QCOW2 format is sparse (it only uses real space for written data)
-and contains all saves automatically.
+Creates `disks/macos9.img` — a 6 GB **raw** disk image. Raw format is required;
+QCOW2 causes mac99's ATA driver in Mac OS 9 to fail device enumeration.
+See `config/qemu.conf.sh` quirk #1 for details.
 
 ---
 
 ## Step 3 — Obtain Mac OS 9
 
-> **Legal note:** Mac OS 9 is Apple proprietary software. You must own a license
-> (e.g. an original retail copy or a Mac that shipped with it). See `docs/legal-notes.md`.
+> **Legal note:** Mac OS 9 is Apple proprietary software. You must own a valid
+> license. See `docs/legal-notes.md`.
 
-Place your Mac OS 9 installation ISO at:
+Download **Mac OS 9.2.2 Universal** and place the ISO at:
 
 ```
 disks/macos9.iso
 ```
 
-Mac OS 9.0, 9.1, 9.2, and 9.2.2 all work. 9.2.2 is recommended for best
-application compatibility.
+Mac OS 9.2.2 is the only version that has been tested with this setup.
 
 ---
 
@@ -59,91 +62,148 @@ application compatibility.
 make install-os
 ```
 
-A QEMU window will open booting from the Mac OS 9 installer CD. Follow the on-screen
-instructions:
+A QEMU window will open. **The install flow is not obvious** — follow these steps
+exactly:
 
-1. The installer will ask you to initialise a disk — choose the blank `Mac OS 9` disk.
-2. Complete the installation.
-3. **Important:** when done, choose **Special → Shut Down**, not Restart.
-   The emulator exits on shutdown.
+### 4a — Wait for boot (~60 seconds)
+
+OpenBIOS takes about 30 seconds before the grey Mac OS 9 boot screen appears.
+Wait for the full desktop to appear before clicking anything.
+
+### 4b — Run Drive Setup before the installer
+
+The installer will open automatically and immediately say **"no volumes available"**.
+This is expected — the blank disk has no Apple Partition Map yet and the installer
+won't touch it. You must initialize the disk first:
+
+1. Close or ignore the installer for now
+2. On the desktop, double-click the installer CD icon
+3. Open the **Utilities** folder inside the CD
+4. Open **Drive Setup**
+5. Drive Setup will list your blank disk — select it
+6. Click **Initialize** and accept the default HFS+ (Mac OS Extended) format
+7. Drive Setup writes an Apple Partition Map and formats the volume
+8. Quit Drive Setup
+
+### 4c — Run the installer
+
+1. Open the Mac OS 9 Installer (either from the CD or the still-open window)
+2. The formatted volume now appears as an installation target
+3. Select it and click **Install**
+4. Let the installation run to completion (~5–10 minutes)
+
+### 4d — Shut down cleanly
+
+When the installer finishes: **Special → Shut Down** from the Mac OS 9 menu bar.
+
+> ⚠️ Do **not** click the red close button on the QEMU window. That kills QEMU
+> abruptly without flushing the disk, which can corrupt the image. Always use
+> Mac OS 9's own Shut Down.
 
 ---
 
-## Step 5 — Install Ferazel's Wand
-
-Download the game from [Macintosh Garden](https://macintoshgarden.org/games/ferazels-wand).
-The recommended version is **v1.0.3 (no-gamma patch)** — it runs stably under QEMU.
-
-To copy the game into the disk image:
-
-1. Run `make launch` to boot into Mac OS 9.
-2. Under the **Apple** menu, open **Networking** or use a shared folder approach,
-   **or** use the steps below to mount an HFS transfer disk.
-
-### Transferring files via a transfer disk image
-
-```bash
-# Create a small FAT32/HFS transfer image on the host
-/opt/homebrew/bin/qemu-img create -f raw disks/transfer.img 512M
-# Format and populate it (use Disk Utility or hdiutil on the host)
-hdiutil create -size 512m -fs HFS+ -volname Transfer -o disks/transfer disks/transfer.img
-# Then copy game files into it via Finder, then launch with the extra disk attached
-```
-
-Add this flag to `scripts/launch.sh` temporarily:
-```
--drive "file=${DISKS_DIR}/transfer.img,format=raw,media=disk,index=1"
-```
-
----
-
-## Step 6 — Launch the game
+## Step 5 — Verify the install boots
 
 ```bash
 make launch
 ```
 
-Mac OS 9 boots from `disks/macos9.qcow2`. All saves are written to this same image,
-so they're portable with the repo.
+Mac OS 9 should boot from `disks/macos9.img` to the full desktop in ~60 seconds.
+If you see the Mac OS 9 desktop, the install succeeded.
+
+---
+
+## Step 6 — Install Ferazel's Wand
+
+Download the game from [Macintosh Garden](https://macintoshgarden.org/games/ferazels-wand).
+
+**Use the no-gamma patched v1.0.3** — the standard binary has a gamma screen-fade
+effect that crashes QEMU during gameplay (particularly when using the dagger).
+
+### Transferring the game into the disk image
+
+The easiest method is a small transfer disk image:
+
+```bash
+# Create a 256 MB HFS transfer disk on your Mac
+vendor/qemu/bin/qemu-img create -f raw disks/transfer.img 256M
+hdiutil attach disks/transfer.img   # mounts it in macOS Finder
+# Drag the Ferazel's Wand .sit file onto the mounted volume in Finder
+hdiutil detach /Volumes/...         # eject it
+```
+
+Then launch with the transfer disk attached as a second IDE drive:
+
+```bash
+QEMU="vendor/qemu/bin/qemu-system-ppc"
+FW="vendor/qemu/share/qemu"
+DISK="disks/macos9.img"
+XFER="disks/transfer.img"
+
+"${QEMU}" -L "${FW}" \
+    -M mac99 -m 256 -cpu G4 \
+    -device ide-hd,bus=ide.0,unit=0,drive=hd0 \
+    -drive  id=hd0,file="${DISK}",format=raw,if=none \
+    -device ide-hd,bus=ide.0,unit=1,drive=xfer \
+    -drive  id=xfer,file="${XFER}",format=raw,if=none \
+    -display cocoa,zoom-to-fit=on \
+    -audiodev coreaudio,id=snd0 \
+    -usb -device usb-mouse -device usb-kbd
+```
+
+Inside Mac OS 9, the transfer disk will appear on the desktop. Use StuffIt Expander
+(should already be on the installer CD or in the Mac OS 9 system) to expand the
+`.sit` archive, then drag the game folder to the hard disk.
+
+---
+
+## Step 7 — Play
+
+```bash
+make launch
+# or double-click FerazelsWand.app
+```
+
+All game saves are written to `disks/macos9.img`. They survive reboots and travel
+with the repo folder.
 
 ---
 
 ## Portability
 
-After `make vendor`, the entire repo is self-contained:
+After `make vendor`, the repo is fully self-contained:
 
 ```
 ferazels-wand-emulator/
-├── vendor/qemu/        ← QEMU binary + dylibs + firmware (ARM64)
-├── disks/macos9.qcow2  ← Mac OS 9 + game + saves
-├── scripts/
-└── config/
+├── FerazelsWand.app        ← double-click to play
+├── vendor/qemu/            ← QEMU binary + 28 dylibs + firmware (ARM64, ~320 MB)
+├── disks/macos9.img        ← Mac OS 9 + game + saves (~6 GB raw image)
+├── config/qemu.conf.sh     ← all QEMU flags + detailed quirk documentation
+└── scripts/                ← setup and launch helpers
 ```
 
-Copy the folder to any ARM64 Mac and `make launch` works with no installation required.
+Copy the folder to any ARM64 Mac and double-click `FerazelsWand.app`.
 
 ---
 
 ## Obtaining Mac OS 9
 
-Mac OS 9 ISOs are widely available for preservation purposes. A few pointers:
+- [Macintosh Garden](https://macintoshgarden.org) — community preservation archive
+- [Internet Archive](https://archive.org) — search "Mac OS 9.2.2"
+- Rip your own with Disk Utility if you own original retail media
 
-- [Macintosh Garden](https://macintoshgarden.org) hosts community-preserved Mac OS releases.
-- The Internet Archive has archived Apple system software.
-- If you own original retail media, you can rip it with Disk Utility.
-
-Recommended: **Mac OS 9.2.2** (latest release, best compatibility).
+**Tested version:** Mac OS 9.2.2 Universal (`macos-922-uni.iso`, 579 MB)
 
 ---
 
 ## Obtaining the Game
 
-All versions are available at [Macintosh Garden — Ferazel's Wand](https://macintoshgarden.org/games/ferazels-wand).
+All versions at [Macintosh Garden — Ferazel's Wand](https://macintoshgarden.org/games/ferazels-wand):
 
 | Version | Recommendation |
 |---|---|
-| v1.0.3 (no-gamma patch) | **Use this** — stable under QEMU |
-| v1.0.2 + 1.0.3 update | Works but requires patching |
+| v1.0.3 (no-gamma patch) | **Use this** — stable under QEMU, no gamma crash |
+| v1.0.2 + 1.0.3 update | Works but requires patching manually |
 | Prototype v1.0d6 / d7 | Historical interest only |
 
 ---
@@ -151,20 +211,27 @@ All versions are available at [Macintosh Garden — Ferazel's Wand](https://maci
 ## Troubleshooting
 
 **QEMU window is black / doesn't boot**
-- Mac OS 9 takes 30–60 seconds to reach the grey screen on first boot.
-- If it stays black, OpenBIOS may not be finding the disk. Verify `disks/macos9.qcow2` exists.
+Mac OS 9 takes 30–60 s before anything appears. If it stays black past 90 s,
+verify `disks/macos9.img` exists and is larger than a few MB.
+
+**"No volumes available" in the installer**
+Expected on a blank disk. Run Drive Setup from the CD's Utilities folder first
+to initialize the disk, then re-run the installer. See Step 4b above.
+
+**"Couldn't read big system resources" during install**
+Caused by running with `via=pmu` or more than 256 MB RAM. Both are disabled
+in the current config. If you see this, verify `config/qemu.conf.sh` has
+`-M mac99` (no `via=pmu`) and `-m 256`.
 
 **Audio doesn't work**
-- macOS may prompt for microphone/audio access the first time. Allow it in System Settings.
+macOS may prompt for microphone/audio access on first launch. Allow it in
+System Settings → Privacy & Security → Microphone.
 
-**Crashes when using the dagger in Ferazel's Wand**
-- Make sure you are using the **no-gamma patched** executable (v1.0.3 no-gamma).
-  The standard binary has a gamma fade effect that crashes QEMU.
+**Game crashes when using the dagger**
+You are using the standard v1.0.3 binary instead of the no-gamma patch.
+The gamma fade on startup/death triggers a QEMU crash. Download the
+`Ferazels_Wand_103_nogamma.sit` version from Macintosh Garden.
 
-**`make vendor` fails with codesign errors**
-- This can happen if Gatekeeper blocks ad-hoc signing. Run:
-  ```bash
-  sudo spctl --master-disable   # temporarily disable Gatekeeper
-  make vendor
-  sudo spctl --master-enable
-  ```
+**`make vendor` fails: "declare: -A: invalid option"**
+macOS ships bash 3.2 which doesn't support associative arrays. This was fixed
+in `scripts/vendor-qemu.sh` — update to the latest version of this repo.

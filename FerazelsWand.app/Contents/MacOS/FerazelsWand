@@ -38,7 +38,7 @@ source "${CONFIG}"
 # ── First-run: disk image not created yet ─────────────────────────────────────
 
 if [[ ! -f "${DISK_IMAGE}" ]]; then
-    alert "Mac OS 9 disk image not found.\n\nOne-time setup required. Open Terminal, navigate to the ferazels-wand-emulator folder, and run:\n\n  make create-disk\n  make install-os\n\n(Place your Mac OS 9 ISO at disks/macos9.iso first.)\n\nSee docs/setup-guide.md for full instructions."
+    alert "Mac OS 9 disk image not found (disks/macos9.img).\n\nOne-time setup required. Open Terminal, navigate to the ferazels-wand-emulator folder, and run:\n\n  make create-disk\n  make install-os\n\n(Place your Mac OS 9 ISO at disks/macos9.iso first.)\n\nSee docs/setup-guide.md for full instructions."
     exit 1
 fi
 
