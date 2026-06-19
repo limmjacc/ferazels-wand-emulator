@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.PHONY: help setup vendor create-disk install-os launch clean
+.PHONY: help setup vendor create-disk install-os install-game launch clean
 
 help:
 	@echo ""
@@ -13,6 +13,7 @@ help:
 	@echo "  make vendor        Bundle QEMU into vendor/ — Homebrew not needed after this"
 	@echo "  make create-disk   Create a blank Mac OS 9 disk image in disks/"
 	@echo "  make install-os    Boot from Mac OS 9 ISO to install the OS"
+	@echo "  make install-game  Boot with game CD + transfer disk to install Ferazel's Wand"
 	@echo ""
 	@echo "Daily use:"
 	@echo "  Double-click FerazelsWand.app  ← the normal way to play"
@@ -35,6 +36,9 @@ create-disk:
 
 install-os:
 	@bash scripts/install-os.sh
+
+install-game:
+	@bash scripts/install-game.sh
 
 launch:
 	@bash scripts/launch.sh
