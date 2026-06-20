@@ -159,10 +159,85 @@ ferazels-wand-emulator/
 
 ## About the Game
 
-**Ferazel's Wand** (1999) is a side-scrolling platformer by Ambrosia Software / Ben Spees.
-Play as Ferazel, last of the Habnabits, fighting through 23 levels to recover a stolen wand.
-Crystal-based progression, hidden passages, puzzle-based boss encounters. Rated 4.75/5 on
-Macintosh Garden. Reviewed in *Macworld* (August 2000).
+**Ferazel's Wand** was released on December 23, 1999 by Ambrosia Software, developed
+primarily by Ben Spees (also known for *Harry the Handsome Executive*). It is widely
+regarded as one of the best side-scrolling platformers on the classic Macintosh.
+
+### Story
+
+The Habnabits are a race of tunnel-dwelling creatures skilled in magic, long living in
+peace underground. That peace is shattered when a horde of goblins — led by the insectoid
+Dread Queen Xichra and her Manditraki army — overruns their tunnels. You play as Ferazel,
+the last of the free Habnabits, fighting through 23 levels across the Seven Lands of
+Teraknorn to vanquish Xichra and recover a stolen wand.
+
+### Gameplay
+
+The game is a side-scrolling platformer with RPG-lite elements. Ferazel can cling to
+walls and ceilings, opening up vertical traversal beyond the typical run-and-jump formula.
+Power comes from collecting magical crystals scattered through levels. A growing arsenal
+of spells and items — fireball, V-Blade, Tree Trunk, and more — unlocks as the game
+progresses.
+
+Boss fights emphasize logic over reflexes: each has a specific weakness to deduce rather
+than a pattern to memorize. The 23 levels span caves, ice fields, desert, and fire biomes,
+with multiple exits per level, end-of-level percentage tracking (enemies killed, Xichrons
+found, secrets discovered), and save points spaced to be forgiving but not trivial.
+
+Later levels lean heavily on environmental hazards: high winds that push Ferazel backwards
+mid-jump, slippery ice, spiked floors, and deep water that damages enemies as much as you.
+Enemies also react to damage — goblins will attack aggressively but retreat when hurt,
+and spiders back off after taking a few hits.
+
+**A gamepad is strongly recommended.** The game has full InputSprocket support, and
+some jumps and wall-climbs are noticeably cleaner with analog input than keyboard.
+
+### Technical highlights
+
+For a 1999 Macintosh title, the engine pushes well beyond the norm:
+
+- Multi-layered parallax scrolling (foreground moves faster than background)
+- Particle system throughout: torch sparks, rain, weapon impacts, ceiling debris from
+  spike hits, bat wing thermals for gliding
+- Realistic physics: floating logs bob when landed on, splash volume scales with drop height
+- Pseudo-3D perspective effects — the swinging mace balls grow as they approach
+- 30 original musical tracks by Eric Speier, one per level, composed specifically for the game
+- Weather effects: thunderstorms with rain, wind, and lightning obscuring the screen
+
+### Reception
+
+Reviewed in *Macworld* (April 2000) by Andy Largent, who called it Ambrosia's "largest
+and most ambitious title to date" and praised its originality, depth of secrets, and
+professional music. Rated 4.75/5 on Macintosh Garden.
+
+> *"Those that take the time to play through it will notice impressive particle and
+> lighting effects... Lighting examples include explosions and flickering torches that
+> make you think, 'Wow, the Mario brothers never did this.'"*
+> — Andy Largent, Macworld, April 2000
+
+### Unused and cut content
+
+The Cutting Room Floor documents extensive content that didn't make the final release,
+discoverable in the game's resource fork data:
+
+- **Unused spells** — Ice Crystals and several others animate correctly but do nothing when cast
+- **Unused items** — a Vorpal Dirk (replaces the Dagger, deals double damage), a Mist Potion
+  (turns Ferazel into a ghost to pass through walls temporarily), and platinum coins worth
+  100 silver each
+- **Cut characters** — forest nymphs named Taryn and Sara, with conversation portraits, that
+  never appear in any level
+- **Unused music** — five tracks left out, likely because there weren't enough levels to use them
+- **Inaccessible rooms** — multiple levels contain hidden rooms with enemies and geometry that
+  can only be reached with out-of-bounds techniques; several appear to be earlier versions of
+  sections that were later redesigned
+- **Harry the Handsome Executive leftovers** — unsupported-processor warnings, copying machine
+  save dialogs, and general preferences screens from Ben Spees' previous game still exist in
+  the binary
+- **Developer notes** — sign strings left in the data include `"Insert a merchant or interesting
+  character in this alcove."` and `"This level is not complete and is here just so the map
+  won't have big gaps in it."`
+
+Full documentation: [The Cutting Room Floor — Ferazel's Wand](https://tcrf.net/Ferazel%27s_Wand)
 
 ---
 
