@@ -97,7 +97,7 @@ QEMU_BASE_FLAGS=(
     -cpu    G4
     -device "ide-hd,bus=ide.0,unit=0,drive=hd0"   # explicit bus — quirk #2
     -drive  "id=hd0,file=${DISK_IMAGE},format=raw,if=none"
-    -display "cocoa,zoom-to-fit=on"
+    -display "cocoa,zoom-to-fit=on,full-screen=on"
     -audiodev "coreaudio,id=snd0"              # no -device screamer — quirk #5
     -usb
     -device  usb-mouse

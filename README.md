@@ -7,7 +7,7 @@ Self-contained — no Homebrew or external dependencies after one-time setup.
 
 ## Play
 
-After setup: **double-click `FerazelsWand.app`**.
+After setup: **double-click `Play.command`**.
 
 All game saves live inside `disks/macos9.img` in this folder. They survive reboots
 and move with the folder. Copy the whole repo to any ARM64 Mac and it just works.
@@ -43,12 +43,14 @@ make create-disk    # 3. create blank 6 GB Mac OS 9 disk image
 make install-os     # 4. INTERACTIVE (~10 min): install Mac OS 9
 make install-game   # 5. INTERACTIVE (~3 min):  run game CD installer, shut down
 make apply-patches  # 6. AUTOMATED: apply v1.0.3 + no-gamma patches from macOS
-make launch         # 7. play — or just double-click FerazelsWand.app
+make launch         # 7. play — or double-click Play.command
 ```
 
 Steps 4 and 5 require brief interaction inside the emulated Mac OS 9 GUI.
 Each prints step-by-step instructions in the terminal before opening the QEMU window.
 Step 6 is fully automated — mounts the disk on macOS and applies patches without QEMU.
+
+Alternatively, double-click **`Setup.command`** to run the full pipeline in a Terminal window.
 
 See **[docs/setup-guide.md](docs/setup-guide.md)** for the detailed walkthrough.
 
@@ -65,14 +67,66 @@ See **[docs/setup-guide.md](docs/setup-guide.md)** for the detailed walkthrough.
 | **Saves** | Written to `disks/macos9.img` — persist and travel with the folder |
 | **No-gamma patch** | Removes the gamma screen-fade that crashes QEMU when using the dagger |
 
+### Emulation stack
+
+```
+Play.command (bash)
+  └── vendor/qemu/bin/qemu-system-ppc
+        └── -M mac99 (Power Mac G4)
+              └── Mac OS 9.2.2 on disks/macos9.img
+                    └── Ferazel's Wand nogamma (game executable)
+```
+
+### Why the game install is interactive
+
+The game CD uses **Installer VISE** — all game files are packed in a proprietary format
+inside the installer application's data fork. There is no macOS extractor for Installer
+VISE. The install must happen inside Mac OS 9.
+
+### Why patch application is automated
+
+After installation, `disks/macos9.img` is an HFS+ volume macOS can mount directly with
+`hdiutil attach`. `unar` extracts the `.sit` patch archives with resource fork metadata
+in AppleDouble format; `ditto` merges that back into proper HFS+ resource forks on the
+mounted volume — no QEMU needed.
+
+### Resource forks
+
+Classic Mac OS game data lives in resource forks, not data forks. The data fork of most
+game files is 0 bytes. Always use `ditto` (not `cp`) when copying game files on macOS —
+`cp` silently drops the resource fork.
+
+### Disk image notes
+
+- Volume name visible to macOS: `untitled` (Drive Setup default in Mac OS 9)
+- Game installed at: `{volume}/Ferazel's Wand 1.0.2 ƒ/` (ƒ = U+0192)
+- Game executable: `Ferazel's Wand nogamma` (post-patch)
+
 ---
 
-## About the Game
+## QEMU Bring-Up Quirks
 
-**Ferazel's Wand** (1999) is a side-scrolling platformer by Ambrosia Software / Ben Spees.
-Play as Ferazel, last of the Habnabits, fighting through 23 levels to recover a stolen wand.
-Crystal-based progression, hidden passages, puzzle-based boss encounters. Rated 4.75/5 on
-Macintosh Garden. Reviewed in *Macworld* (August 2000).
+Nine non-obvious issues discovered during bring-up, all handled in `config/qemu.conf.sh`:
+
+1. **Raw disk format required** — QCOW2 fails mac99 ATA enumeration during OS install
+2. **Explicit IDE bus assignment** — QEMU 11 creates phantom IDE-CD devices without it
+3. **No `via=pmu`** — causes "couldn't read big system resources" installer failures
+4. **256 MB RAM only** — 512 MB causes installer instability
+5. **No `-device screamer`** — Screamer audio is auto-connected in QEMU 11; adding it explicitly causes a fatal error
+6. **`cache=unsafe` on CD during install** — prevents read stalls on large sequential CD reads
+7. **bash 3.2 compatibility** — macOS ships bash 3.2; no `declare -A` or other bash 4+ features
+8. **Game folder has a ƒ character** — folder name is `Ferazel's Wand 1.0.2 ƒ` (U+0192); use globs not hardcoded paths
+9. **Game CD is plain HFS** — macOS Catalina+ dropped plain HFS support; the CD must be accessed via QEMU's IDE-CD driver
+
+---
+
+## What NOT to Do
+
+- **Don't close QEMU with the red window button during setup** — hard-kills without flushing the disk, corrupts the image. Always use Special → Shut Down inside Mac OS 9.
+- **Don't increase RAM beyond 256 MB** — causes installer instability
+- **Don't add `via=pmu`** to the machine flags
+- **Don't use QCOW2** format for the disk image
+- **Don't use `cp` for game files** — use `ditto` to preserve resource forks
 
 ---
 
@@ -80,11 +134,13 @@ Macintosh Garden. Reviewed in *Macworld* (August 2000).
 
 ```
 ferazels-wand-emulator/
-├── FerazelsWand.app/         ← double-click to play
+├── Play.command              ← double-click to play
+├── Setup.command             ← double-click to run full setup
 ├── Makefile                  ← all commands, run 'make' for help
 ├── config/
 │   └── qemu.conf.sh          ← QEMU flags + 9 documented bring-up quirks
 ├── scripts/
+│   ├── bootstrap.sh          ← runs all setup steps in sequence
 │   ├── setup.sh              ← brew install qemu unar
 │   ├── vendor-qemu.sh        ← bundle binaries + dylibs into vendor/
 │   ├── create-disk.sh        ← create blank raw disk image
@@ -98,6 +154,15 @@ ferazels-wand-emulator/
     ├── setup-guide.md        ← full walkthrough
     └── legal-notes.md
 ```
+
+---
+
+## About the Game
+
+**Ferazel's Wand** (1999) is a side-scrolling platformer by Ambrosia Software / Ben Spees.
+Play as Ferazel, last of the Habnabits, fighting through 23 levels to recover a stolen wand.
+Crystal-based progression, hidden passages, puzzle-based boss encounters. Rated 4.75/5 on
+Macintosh Garden. Reviewed in *Macworld* (August 2000).
 
 ---
 
