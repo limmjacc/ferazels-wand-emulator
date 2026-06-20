@@ -28,8 +28,25 @@ if [[ ! -f "${DISK_IMAGE}" ]]; then
     exit 1
 fi
 
-exec "${QEMU_BIN}" \
+# Check for an already-running QEMU session (write lock on the disk)
+if pgrep -x qemu-system-ppc > /dev/null 2>&1; then
+    alert "Ferazel's Wand is already running.\n\nClose the existing QEMU window first, then try again."
+    exit 1
+fi
+
+QEMU_ERR=$(mktemp /tmp/fw_qemu_err_XXXXX)
+
+"${QEMU_BIN}" \
     "${QEMU_BASE_FLAGS[@]}" \
     -device "ide-cd,bus=ide.1,unit=0,drive=cd0" \
     -drive  "id=cd0,file=${GAME_ISO},format=raw,if=none,media=cdrom,readonly=on,cache=unsafe" \
-    -no-reboot
+    -no-reboot 2>"${QEMU_ERR}"
+QEMU_EXIT=$?
+
+if [[ ${QEMU_EXIT} -ne 0 ]]; then
+    ERR_MSG=$(cat "${QEMU_ERR}" 2>/dev/null | head -5)
+    rm -f "${QEMU_ERR}"
+    alert "QEMU exited with an error (code ${QEMU_EXIT}):\n\n${ERR_MSG}\n\nIf the disk is locked, make sure no other QEMU window is open."
+    exit "${QEMU_EXIT}"
+fi
+rm -f "${QEMU_ERR}"
