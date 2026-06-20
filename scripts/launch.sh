@@ -18,4 +18,6 @@ fi
 
 "${QEMU_BIN}" \
     "${QEMU_BASE_FLAGS[@]}" \
+    -device "ide-cd,bus=ide.1,unit=0,drive=cd0" \
+    -drive  "id=cd0,file=${GAME_ISO},format=raw,if=none,media=cdrom,readonly=on,cache=unsafe" \
     -no-reboot
