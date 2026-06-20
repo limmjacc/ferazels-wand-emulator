@@ -1,48 +1,32 @@
 #!/usr/bin/env bash
-# Ferazel's Wand launcher
-# Lives inside FerazelsWand.app/Contents/MacOS/ — the .app can live anywhere
-# inside the repo root and will find its sibling config/ and vendor/ directories.
-
+# Ferazel's Wand launcher — lives inside FerazelsWand.app/Contents/MacOS/.
+# The .app can live anywhere inside the repo root and resolves sibling paths.
 set -euo pipefail
 
-# ── Resolve paths ─────────────────────────────────────────────────────────────
-# .app/Contents/MacOS/FerazelsWand  →  up 3 levels  →  repo root
 MACOS_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "${MACOS_DIR}/../../.." && pwd)"
 CONFIG="${REPO_ROOT}/config/qemu.conf.sh"
 
 alert() {
-    local msg="$1"
-    osascript -e "display dialog \"${msg}\" with title \"Ferazel's Wand\" buttons {\"OK\"} default button \"OK\" with icon stop" 2>/dev/null || true
+    osascript -e "display dialog \"$1\" with title \"Ferazel's Wand\" buttons {\"OK\"} default button \"OK\" with icon stop" 2>/dev/null || true
 }
 
-# ── Sanity checks ─────────────────────────────────────────────────────────────
-
 if [[ ! -f "${CONFIG}" ]]; then
-    alert "Configuration not found.\n\nMake sure FerazelsWand.app is inside the ferazels-wand-emulator folder — do not move the .app out of the repo."
+    alert "Configuration not found.\n\nMake sure FerazelsWand.app is inside the ferazels-wand-emulator folder."
     exit 1
 fi
 
 source "${CONFIG}"
 
-# ── First-run: QEMU not vendored yet ──────────────────────────────────────────
-
-if [[ ! -x "${VENDOR_QEMU}/bin/qemu-system-ppc" ]] && [[ ! -x "${BREW_QEMU}/qemu-system-ppc" ]]; then
-    alert "QEMU not found.\n\nOne-time setup required. Open Terminal, navigate to the ferazels-wand-emulator folder, and run:\n\n  make setup\n  make vendor\n\nThen double-click this app again."
+if [[ ! -x "${QEMU_BIN:-}" ]]; then
+    alert "QEMU not found.\n\nOpen Terminal in the repo folder and run:\n\n  make setup\n  make vendor\n\nThen double-click this app again."
     exit 1
 fi
-
-# Re-source after the check so QEMU_BIN etc. are set
-source "${CONFIG}"
-
-# ── First-run: disk image not created yet ─────────────────────────────────────
 
 if [[ ! -f "${DISK_IMAGE}" ]]; then
-    alert "Mac OS 9 disk image not found (disks/macos9.img).\n\nOne-time setup required. Open Terminal, navigate to the ferazels-wand-emulator folder, and run:\n\n  make create-disk\n  make install-os\n\n(Place your Mac OS 9 ISO at disks/macos9.iso first.)\n\nSee docs/setup-guide.md for full instructions."
+    alert "Mac OS 9 disk image not found.\n\nOpen Terminal in the repo folder and run:\n\n  make create-disk\n  make install-os\n  make install-game\n  make apply-patches\n\nSee docs/setup-guide.md for the full walkthrough."
     exit 1
 fi
-
-# ── Launch ────────────────────────────────────────────────────────────────────
 
 exec "${QEMU_BIN}" \
     "${QEMU_BASE_FLAGS[@]}" \

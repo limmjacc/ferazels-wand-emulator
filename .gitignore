@@ -1,24 +1,18 @@
-# Disk images — large binary files, user-provided
-# macos9.img is the raw Mac OS 9 disk (raw format required — see config/qemu.conf.sh quirk #1)
+# Disk images — large binaries, user-provided or generated locally
 disks/*.img
 disks/*.iso
 disks/*.dmg
+disks/*.cdr
+disks/*.qcow2
 
-# Game and OS archives
+# Game and OS archives — user-provided
 *.sit
 *.hqx
 *.bin
-*.rom
 
-# Vendored QEMU binaries — populated by `make vendor`, not committed
+# Vendored QEMU + tools — built by 'make vendor', not committed
 vendor/qemu/
 
 # macOS
 .DS_Store
 **/.DS_Store
-
-# Xcode (future app/)
-app/*.xcodeproj/xcuserdata/
-app/DerivedData/
-app/build/
-*.xcworkspace/xcuserdata/

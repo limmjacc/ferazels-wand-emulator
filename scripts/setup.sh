@@ -1,26 +1,29 @@
 #!/usr/bin/env bash
+# One-time dependency setup — installs QEMU and unar via Homebrew.
+# After this, run 'make vendor' to bundle everything so Homebrew is not
+# required at runtime.
 set -euo pipefail
 
 BREW="/opt/homebrew/bin/brew"
 
-echo "==> Ferazel's Wand Emulator — dependency setup"
+echo "==> Ferazel's Wand — one-time setup"
 echo ""
 
-# Verify Apple Silicon
-arch="$(uname -m)"
-if [[ "${arch}" != "arm64" ]]; then
-    echo "WARNING: Expected arm64, got ${arch}. This project targets Apple Silicon."
+if [[ "$(uname -m)" != "arm64" ]]; then
+    echo "WARNING: Expected arm64 (Apple Silicon). Got $(uname -m)."
+    echo "         This project targets M1/M2/M3/M4 Macs."
 fi
 
-# Verify Homebrew
 if [[ ! -x "${BREW}" ]]; then
-    echo "ERROR: Homebrew not found at ${BREW}"
-    echo "       Install it from https://brew.sh, then re-run."
+    echo "ERROR: Homebrew not found at ${BREW}."
+    echo "       Install it from https://brew.sh then re-run 'make setup'."
     exit 1
 fi
 echo "  Homebrew: $("${BREW}" --version | head -1)"
+echo ""
 
-# Install QEMU
+# ── QEMU ─────────────────────────────────────────────────────────────────────
+
 if "${BREW}" list qemu &>/dev/null; then
     echo "  QEMU: already installed ($("${BREW}" list --versions qemu))"
 else
@@ -30,13 +33,29 @@ fi
 
 QEMU_BIN="/opt/homebrew/bin/qemu-system-ppc"
 if [[ ! -x "${QEMU_BIN}" ]]; then
-    echo "ERROR: qemu-system-ppc not found after installation."
+    echo "ERROR: qemu-system-ppc not found after install."
     exit 1
 fi
+echo "  QEMU: $("${QEMU_BIN}" --version | head -1)"
 
-echo "  QEMU binary: ${QEMU_BIN}"
-echo "  QEMU version: $("${QEMU_BIN}" --version | head -1)"
+# ── unar (The Unarchiver CLI) ─────────────────────────────────────────────────
+# Used by 'make apply-patches' to extract .sit StuffIt archives on macOS.
+
+if "${BREW}" list unar &>/dev/null; then
+    echo "  unar: already installed ($("${BREW}" list --versions unar))"
+else
+    echo "  Installing unar (StuffIt extractor)..."
+    "${BREW}" install unar
+fi
+
+UNAR_BIN="/opt/homebrew/bin/unar"
+if [[ ! -x "${UNAR_BIN}" ]]; then
+    echo "ERROR: unar not found after install."
+    exit 1
+fi
+echo "  unar: $("${UNAR_BIN}" --version 2>&1 | head -1)"
+
 echo ""
 echo "==> Setup complete."
 echo ""
-echo "Next step: run 'make vendor' to bundle QEMU into this repo for portability."
+echo "Next: run 'make vendor' to bundle QEMU + unar into vendor/ for portability."

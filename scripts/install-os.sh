@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
+# Boot from Mac OS 9 ISO to install the OS onto disks/macos9.img.
+# This is an interactive session — follow the on-screen instructions below.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../config/qemu.conf.sh"
 
-# ── Preflight ────────────────────────────────────────────────────────────────
-
 if [[ ! -f "${MACOS9_ISO}" ]]; then
     echo "ERROR: Mac OS 9 ISO not found at: ${MACOS9_ISO}"
-    echo "       Place your Mac OS 9 installation ISO there and re-run."
-    echo "       See docs/setup-guide.md for details."
+    echo "       Place your Mac OS 9.2.2 ISO there and re-run."
+    echo "       See docs/setup-guide.md → Obtaining Mac OS 9."
     exit 1
 fi
 
@@ -19,35 +19,32 @@ if [[ ! -f "${DISK_IMAGE}" ]]; then
     exit 1
 fi
 
-# ── Launch ───────────────────────────────────────────────────────────────────
-#
-# The CD is attached on ide.1 with cache=unsafe. See config/qemu.conf.sh
-# quirk #2 (explicit IDE bus) and quirk #6 (cache=unsafe on CD).
-#
-# Installation walkthrough:
-#   1. Wait ~60s for Mac OS 9 to boot from the installer CD.
-#   2. When the installer opens, click Continue — it will say "no volumes found".
-#      This is expected: the blank disk has no partition table yet.
-#   3. Do NOT run the installer yet. Instead, find Drive Setup:
-#        • Open the installer CD icon on the desktop
-#        • Navigate to Utilities → Drive Setup
-#   4. Drive Setup will list the blank disk. Select it and click Initialize.
-#      Accept the default HFS+ format. This writes an Apple Partition Map.
-#   5. Close Drive Setup. The installer will now find the formatted volume.
-#   6. Run the installer, select the new volume, and complete installation.
-#   7. When done: Special → Shut Down (NOT the red window close button).
-#      The emulator exits cleanly on shutdown and saves the disk image.
+cat <<'INSTRUCTIONS'
+==> Booting Mac OS 9 installer — follow these steps exactly:
 
-echo "==> Booting from Mac OS 9 ISO..."
-echo ""
-echo "    IMPORTANT — read before you click anything:"
-echo "    The installer will say 'no volumes' on first open. This is normal."
-echo "    You must run Drive Setup first (on the CD under Utilities/)."
-echo "    Drive Setup will find the blank disk and initialize it."
-echo "    Then run the installer. See docs/setup-guide.md for full steps."
-echo ""
-echo "    When installation is complete: Special → Shut Down (not Restart)."
-echo ""
+  ① Wait ~60 seconds for Mac OS 9 to boot from the installer CD.
+
+  ② The installer opens automatically and says "no volumes available".
+     This is normal — the blank disk has no partition table yet.
+     CLOSE or IGNORE the installer for now.
+
+  ③ On the desktop, double-click the installer CD icon.
+     Open the Utilities folder inside.
+     Launch Drive Setup.
+
+  ④ Drive Setup lists your blank disk. Select it → click Initialize.
+     Accept the default HFS+ format. This writes an Apple Partition Map.
+     Quit Drive Setup when it finishes.
+
+  ⑤ Now run the Mac OS 9 Installer (from the CD or the open window).
+     The formatted volume now appears. Select it → click Install.
+     Installation takes 5–10 minutes.
+
+  ⑥ When the installer finishes: Special → Shut Down.
+     DO NOT close the QEMU window — that corrupts the disk image.
+     The window closes automatically after Shut Down.
+
+INSTRUCTIONS
 
 "${QEMU_BIN}" \
     "${QEMU_BASE_FLAGS[@]}" \
@@ -56,5 +53,4 @@ echo ""
     -boot d
 
 echo ""
-echo "==> Installation session ended."
-echo "    If installation completed successfully, run 'make launch'."
+echo "==> Session ended. If installation completed, run 'make install-game'."

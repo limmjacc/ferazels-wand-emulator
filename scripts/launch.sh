@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
+# Normal gameplay launch — boots Mac OS 9 from disks/macos9.img.
+# No CD attached. All saves write to macos9.img and persist between sessions.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../config/qemu.conf.sh"
 
 if [[ ! -f "${DISK_IMAGE}" ]]; then
-    echo "ERROR: Disk image not found at: ${DISK_IMAGE}"
-    echo "       Run 'make create-disk' and 'make install-os' first."
+    echo "ERROR: ${DISK_IMAGE} not found."
+    echo "       Complete the one-time setup first. See docs/setup-guide.md."
     exit 1
 fi
 
-echo "==> Launching Mac OS 9..."
-[[ "${IS_VENDORED}" -eq 1 ]] && echo "    (self-contained vendored QEMU — no Homebrew required)"
+[[ "${IS_VENDORED}" -eq 1 ]] \
+    && echo "==> Launching Ferazel's Wand (self-contained)..." \
+    || echo "==> Launching Ferazel's Wand (via Homebrew QEMU)..."
 
-# No CD attached at runtime. All saves write to disks/macos9.img which
-# persists between launches and travels with the repo. See config/qemu.conf.sh
-# for full documentation of the QEMU flags used here.
 "${QEMU_BIN}" \
     "${QEMU_BASE_FLAGS[@]}" \
     -no-reboot
