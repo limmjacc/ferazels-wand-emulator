@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Setup launcher — runs the full bootstrap pipeline in a new Terminal window.
+set -euo pipefail
+
+MACOS_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "${MACOS_DIR}/../../.." && pwd)"
+
+alert() {
+    osascript -e "display dialog \"$1\" with title \"Ferazel's Wand Setup\" buttons {\"OK\"} default button \"OK\" with icon stop" 2>/dev/null || true
+}
+
+if [[ ! -f "${REPO_ROOT}/Makefile" ]]; then
+    alert "Setup.app must stay inside the ferazels-wand-emulator folder."
+    exit 1
+fi
+
+# Open a new Terminal window and run bootstrap there so the user can
+# see the instructions for the interactive QEMU steps.
+osascript <<APPLESCRIPT
+tell application "Terminal"
+    activate
+    do script "cd '${REPO_ROOT}' && make bootstrap"
+end tell
+APPLESCRIPT
