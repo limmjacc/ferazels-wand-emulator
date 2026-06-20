@@ -292,21 +292,25 @@ fi
 # Key file: openbios-ppc - the OpenFirmware implementation for mac99.
 
 echo ""
-echo "==> Copying QEMU firmware from screamer build..."
-# The build bundle may contain broken symlinks (e.g. trace-events-all pointing
-# to files outside the bundle). Use find to copy only real files, skipping those.
-FIRMWARE_SRC="${QEMU_BUILD}/qemu-bundle/usr/local/share/qemu"
+echo "==> Copying QEMU firmware..."
+# ROM files in the screamer build bundle are symlinks pointing back into the
+# build tree. Use the Homebrew QEMU firmware instead - it contains the same
+# OpenBIOS and option ROMs and is already fully resolved on disk.
+# Critical for mac99: openbios-ppc (the OpenFirmware ROM that boots the machine).
+FIRMWARE_SRC="${BREW_PREFIX}/share/qemu"
 mkdir -p "${SHARE_DIR}/qemu"
 if [[ -d "${FIRMWARE_SRC}" ]]; then
-    find "${FIRMWARE_SRC}" -maxdepth 1 \( -type f -o -type d \) | while IFS= read -r item; do
-        [[ "${item}" == "${FIRMWARE_SRC}" ]] && continue
-        cp -r "${item}" "${SHARE_DIR}/qemu/" 2>/dev/null || true
-    done
+    cp -r "${FIRMWARE_SRC}/." "${SHARE_DIR}/qemu/"
     echo "  Firmware: $(du -sh "${SHARE_DIR}/qemu" | awk '{print $1}')"
+    if [[ ! -f "${SHARE_DIR}/qemu/openbios-ppc" ]]; then
+        echo "  ERROR: openbios-ppc missing after firmware copy. mac99 will not boot."
+        exit 1
+    fi
+    echo "  openbios-ppc: present"
 else
-    # Fallback: use Homebrew QEMU firmware (less ideal but functional)
-    echo "  WARNING: screamer build firmware not found. Falling back to Homebrew firmware."
-    cp -r "${BREW_PREFIX}/share/qemu/." "${SHARE_DIR}/qemu/"
+    echo "  ERROR: Homebrew QEMU firmware not found at ${FIRMWARE_SRC}."
+    echo "         Run 'brew install qemu' and retry."
+    exit 1
 fi
 
 # ── Step 12: sign everything ──────────────────────────────────────────────────
