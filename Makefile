@@ -3,12 +3,12 @@ SHELL := /bin/bash
 
 help:
 	@echo ""
-	@echo "Ferazel's Wand — QEMU-PPC Emulator for Apple Silicon"
+	@echo "Ferazel's Wand - QEMU-PPC Emulator for Apple Silicon"
 	@echo "======================================================"
 	@echo ""
 	@echo "After setup, just double-click Play.command to play."
 	@echo ""
-	@echo "QUICKSTART — run all setup steps in one command:"
+	@echo "QUICKSTART - run all setup steps in one command:"
 	@echo ""
 	@echo "  make bootstrap      Full pipeline: setup → vendor → OS install → game install → patch"
 	@echo ""
@@ -18,7 +18,7 @@ help:
 	@echo "OR run each step individually:"
 	@echo ""
 	@echo "  1.  make setup          Install QEMU + unar via Homebrew (needs internet)"
-	@echo "  2.  make vendor         Bundle everything into vendor/ — no Homebrew after this"
+	@echo "  2.  make vendor         Bundle everything into vendor/ - no Homebrew after this"
 	@echo "  3.  make create-disk    Create a blank 6 GB Mac OS 9 disk image"
 	@echo ""
 	@echo "  Place these files in disks/ before continuing:"

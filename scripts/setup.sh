@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# One-time dependency setup — installs QEMU and unar via Homebrew.
+# One-time dependency setup - installs QEMU and unar via Homebrew.
 # After this, run 'make vendor' to bundle everything so Homebrew is not
 # required at runtime.
 set -euo pipefail
 
 BREW="/opt/homebrew/bin/brew"
 
-echo "==> Ferazel's Wand — one-time setup"
+echo "==> Ferazel's Wand - one-time setup"
 echo ""
 
 if [[ "$(uname -m)" != "arm64" ]]; then

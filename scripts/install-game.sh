@@ -2,7 +2,7 @@
 # Boot Mac OS 9 with the Ferazel's Wand game CD attached.
 # Run the CD installer inside Mac OS 9, then shut down.
 # Patches (v1.0.3 + no-gamma) are applied automatically afterwards
-# by 'make apply-patches' — no manual steps required inside Mac OS 9.
+# by 'make apply-patches' - no manual steps required inside Mac OS 9.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -22,7 +22,7 @@ if [[ ! -f "${GAME_ISO}" ]]; then
 fi
 
 cat <<'INSTRUCTIONS'
-==> Booting Mac OS 9 with game CD — follow these steps:
+==> Booting Mac OS 9 with game CD - follow these steps:
 
   ① Wait ~60 seconds for Mac OS 9 to boot.
 
@@ -37,10 +37,10 @@ cat <<'INSTRUCTIONS'
   ⑤ When the installer finishes, click Quit.
 
   ⑥ Special → Shut Down.
-     DO NOT close the QEMU window — that corrupts the disk image.
+     DO NOT close the QEMU window - that corrupts the disk image.
 
   After shutdown, run 'make apply-patches' to finish setup.
-  That step is fully automated — no Mac OS 9 interaction needed.
+  That step is fully automated - no Mac OS 9 interaction needed.
 
 INSTRUCTIONS
 

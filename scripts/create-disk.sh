@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Creates a blank 6 GB raw disk image for Mac OS 9.
-# Raw format is required — see config/qemu.conf.sh quirk #1.
+# Raw format is required - see config/qemu.conf.sh quirk #1.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

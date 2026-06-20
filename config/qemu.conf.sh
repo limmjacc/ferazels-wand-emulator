@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared QEMU configuration — source this from all scripts.
+# Shared QEMU configuration - source this from all scripts.
 # Prefers the self-contained vendored binary; falls back to Homebrew.
 #
 # ── QEMU 11 + mac99 + Mac OS 9.2.2 bring-up quirks ───────────────────────────
@@ -18,7 +18,7 @@
 # 3. Do NOT use -M mac99,via=pmu.
 #    PMU causes "couldn't read big system resources" installer failures.
 #
-# 4. 256 MB RAM only — do not increase.
+# 4. 256 MB RAM only - do not increase.
 #    512 MB causes installer instability. Game runs fine at 256 MB.
 #
 # 5. screamer audio removed in QEMU 11.
@@ -31,7 +31,7 @@
 #    QEMU stalls on those reads and produces "couldn't read" errors mid-install.
 #    Only needed during install-os, not during gameplay.
 #
-# 7. macOS system bash is version 3.2 — no associative arrays.
+# 7. macOS system bash is version 3.2 - no associative arrays.
 #    macOS ships bash 3.2 (GPLv2). declare -A fails. All scripts use
 #    file-existence checks instead.
 #
@@ -39,7 +39,7 @@
 #    Installer VISE names the game folder "Ferazel's Wand 1.0.2 ƒ" where ƒ is
 #    U+0192. Use shell globs (Ferazel*) rather than hardcoded paths.
 #
-# 9. Game CD is plain HFS (not HFS+) — macOS Catalina+ cannot mount it.
+# 9. Game CD is plain HFS (not HFS+) - macOS Catalina+ cannot mount it.
 #    The CD image uses raw HFS with 1536-byte allocation blocks and no partition
 #    map. Modern macOS dropped plain HFS support. machfs (pip3) can read it;
 #    Mac OS 9 reads it natively as a CD-ROM via ide-cd.
@@ -48,7 +48,7 @@
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 DISKS_DIR="${REPO_ROOT}/disks"
-DISK_IMAGE="${DISKS_DIR}/macos9.img"   # raw format — quirk #1
+DISK_IMAGE="${DISKS_DIR}/macos9.img"   # raw format - quirk #1
 MACOS9_ISO="${DISKS_DIR}/macos9.iso"
 GAME_ISO="${DISKS_DIR}/Ferazel's Wand 1.0.2.ISO"
 SIT_103="${DISKS_DIR}/Ferazel's Wand 1.0.3 update.sit"
@@ -92,13 +92,13 @@ fi
 
 QEMU_BASE_FLAGS=(
     "${QEMU_DATA_FLAGS[@]+"${QEMU_DATA_FLAGS[@]}"}"
-    -M      mac99                              # no via=pmu — quirk #3
-    -m      256                                # 256 MB only — quirk #4
+    -M      mac99                              # no via=pmu - quirk #3
+    -m      256                                # 256 MB only - quirk #4
     -cpu    G4
-    -device "ide-hd,bus=ide.0,unit=0,drive=hd0"   # explicit bus — quirk #2
+    -device "ide-hd,bus=ide.0,unit=0,drive=hd0"   # explicit bus - quirk #2
     -drive  "id=hd0,file=${DISK_IMAGE},format=raw,if=none"
     -display "cocoa,zoom-to-fit=on,full-screen=on"
-    -audiodev "coreaudio,id=snd0"              # no -device screamer — quirk #5
+    -audiodev "coreaudio,id=snd0"              # no -device screamer - quirk #5
     -usb
     -device  usb-mouse
     -device  usb-kbd

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Boot from Mac OS 9 ISO to install the OS onto disks/macos9.img.
-# This is an interactive session — follow the on-screen instructions below.
+# This is an interactive session - follow the on-screen instructions below.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,12 +20,12 @@ if [[ ! -f "${DISK_IMAGE}" ]]; then
 fi
 
 cat <<'INSTRUCTIONS'
-==> Booting Mac OS 9 installer — follow these steps exactly:
+==> Booting Mac OS 9 installer - follow these steps exactly:
 
   ① Wait ~60 seconds for Mac OS 9 to boot from the installer CD.
 
   ② The installer opens automatically and says "no volumes available".
-     This is normal — the blank disk has no partition table yet.
+     This is normal - the blank disk has no partition table yet.
      CLOSE or IGNORE the installer for now.
 
   ③ On the desktop, double-click the installer CD icon.
@@ -41,7 +41,7 @@ cat <<'INSTRUCTIONS'
      Installation takes 5–10 minutes.
 
   ⑥ When the installer finishes: Special → Shut Down.
-     DO NOT close the QEMU window — that corrupts the disk image.
+     DO NOT close the QEMU window - that corrupts the disk image.
      The window closes automatically after Shut Down.
 
 INSTRUCTIONS

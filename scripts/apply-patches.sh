@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Automated patch application — runs entirely on macOS, no Mac OS 9 needed.
+# Automated patch application - runs entirely on macOS, no Mac OS 9 needed.
 #
 # After 'make install-game' (the CD installer session), this script:
 #   1. Mounts disks/macos9.img directly on macOS
@@ -91,7 +91,7 @@ echo "    Extracting v1.0.3 update..."
 mkdir -p "${WORK}/update"
 "${UNAR_BIN}" -o "${WORK}/update" "${SIT_103}" 1>/dev/null
 
-# The .sit contains a wrapper folder — find it
+# The .sit contains a wrapper folder - find it
 UPDATE_SUBFOLDER=$(find "${WORK}/update" -mindepth 1 -maxdepth 1 -type d | head -1)
 
 if [[ -n "${UPDATE_SUBFOLDER}" ]]; then

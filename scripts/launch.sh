@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Normal gameplay launch — boots Mac OS 9 from disks/macos9.img.
+# Normal gameplay launch - boots Mac OS 9 from disks/macos9.img.
 # No CD attached. All saves write to macos9.img and persist between sessions.
 set -euo pipefail
 

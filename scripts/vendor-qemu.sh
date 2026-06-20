@@ -36,7 +36,7 @@ mkdir -p "${BIN_DIR}" "${LIB_DIR}" "${SHARE_DIR}"
 # Recursively copies non-system dylibs and rewrites load paths so the binaries
 # find their libraries via @loader_path regardless of where the repo lives.
 # Uses file-existence check instead of associative array (macOS bash 3.2 compat
-# — no declare -A). See config/qemu.conf.sh quirk #7.
+# - no declare -A). See config/qemu.conf.sh quirk #7.
 
 bundle_dylibs() {
     local target="$1"
@@ -108,5 +108,5 @@ echo "    Binaries : ${#BINARIES[@]} (${BIN_DIR})"
 echo "    Libraries: ${lib_count} dylibs (${LIB_DIR})"
 echo "    Firmware : ${share_size} (${SHARE_DIR}/qemu)"
 echo ""
-echo "The repo is now self-contained. Copy to any ARM64 Mac — no Homebrew needed."
+echo "The repo is now self-contained. Copy to any ARM64 Mac - no Homebrew needed."
 echo "Next: run 'make create-disk'."

@@ -1,7 +1,7 @@
-# Ferazel's Wand — QEMU-PPC Emulator
+# Ferazel's Wand - QEMU-PPC Emulator
 
 Run the original 1999 Ambrosia Software Mac OS 9 game on Apple Silicon Macs.
-Self-contained — no Homebrew or external dependencies after one-time setup.
+Self-contained - no Homebrew or external dependencies after one-time setup.
 
 ---
 
@@ -20,7 +20,7 @@ and move with the folder. Copy the whole repo to any ARM64 Mac and it just works
 
 - Apple Silicon Mac (M1 / M2 / M3 / M4)
 - macOS 13 Ventura or later
-- [Homebrew](https://brew.sh) — used once to install QEMU; not needed after `make vendor`
+- [Homebrew](https://brew.sh) - used once to install QEMU; not needed after `make vendor`
 - ~8 GB free disk space
 
 ### Files needed in `disks/`
@@ -30,25 +30,25 @@ Download and place these files before running the setup steps:
 | File | Where to get it |
 |---|---|
 | `disks/macos9.iso` | Mac OS 9.2.2 Universal (Macintosh Garden / Internet Archive) |
-| `disks/Ferazel's Wand 1.0.2.ISO` | [Macintosh Garden — Ferazel's Wand](https://macintoshgarden.org/games/ferazels-wand) |
+| `disks/Ferazel's Wand 1.0.2.ISO` | [Macintosh Garden - Ferazel's Wand](https://macintoshgarden.org/games/ferazels-wand) |
 | `disks/Ferazel's Wand 1.0.3 update.sit` | Same page |
-| `disks/Ferazels_Wand_103_nogamma.sit` | Same page — **required for QEMU stability** |
+| `disks/Ferazels_Wand_103_nogamma.sit` | Same page - **required for QEMU stability** |
 
 ### Setup commands
 
 ```bash
 make setup          # 1. install QEMU + unar via Homebrew (one-time, needs internet)
-make vendor         # 2. bundle into vendor/ — no Homebrew needed after this
+make vendor         # 2. bundle into vendor/ - no Homebrew needed after this
 make create-disk    # 3. create blank 6 GB Mac OS 9 disk image
 make install-os     # 4. INTERACTIVE (~10 min): install Mac OS 9
 make install-game   # 5. INTERACTIVE (~3 min):  run game CD installer, shut down
 make apply-patches  # 6. AUTOMATED: apply v1.0.3 + no-gamma patches from macOS
-make launch         # 7. play — or double-click Play.command
+make launch         # 7. play - or double-click Play.command
 ```
 
 Steps 4 and 5 require brief interaction inside the emulated Mac OS 9 GUI.
 Each prints step-by-step instructions in the terminal before opening the QEMU window.
-Step 6 is fully automated — mounts the disk on macOS and applies patches without QEMU.
+Step 6 is fully automated - mounts the disk on macOS and applies patches without QEMU.
 
 Alternatively, double-click **`Setup.command`** to run the full pipeline in a Terminal window.
 
@@ -64,7 +64,7 @@ See **[docs/setup-guide.md](docs/setup-guide.md)** for the detailed walkthrough.
 | **OS** | Mac OS 9.2.2 Universal |
 | **Game** | Ferazel's Wand v1.0.3, no-gamma patched executable |
 | **Portability** | QEMU + unar + dylibs + firmware vendored into `vendor/qemu/` |
-| **Saves** | Written to `disks/macos9.img` — persist and travel with the folder |
+| **Saves** | Written to `disks/macos9.img` - persist and travel with the folder |
 | **No-gamma patch** | Removes the gamma screen-fade that crashes QEMU when using the dagger |
 
 ### Emulation stack
@@ -79,7 +79,7 @@ Play.command (bash)
 
 ### Why the game install is interactive
 
-The game CD uses **Installer VISE** — all game files are packed in a proprietary format
+The game CD uses **Installer VISE** - all game files are packed in a proprietary format
 inside the installer application's data fork. There is no macOS extractor for Installer
 VISE. The install must happen inside Mac OS 9.
 
@@ -88,12 +88,12 @@ VISE. The install must happen inside Mac OS 9.
 After installation, `disks/macos9.img` is an HFS+ volume macOS can mount directly with
 `hdiutil attach`. `unar` extracts the `.sit` patch archives with resource fork metadata
 in AppleDouble format; `ditto` merges that back into proper HFS+ resource forks on the
-mounted volume — no QEMU needed.
+mounted volume - no QEMU needed.
 
 ### Resource forks
 
 Classic Mac OS game data lives in resource forks, not data forks. The data fork of most
-game files is 0 bytes. Always use `ditto` (not `cp`) when copying game files on macOS —
+game files is 0 bytes. Always use `ditto` (not `cp`) when copying game files on macOS -
 `cp` silently drops the resource fork.
 
 ### Disk image notes
@@ -108,25 +108,25 @@ game files is 0 bytes. Always use `ditto` (not `cp`) when copying game files on 
 
 Nine non-obvious issues discovered during bring-up, all handled in `config/qemu.conf.sh`:
 
-1. **Raw disk format required** — QCOW2 fails mac99 ATA enumeration during OS install
-2. **Explicit IDE bus assignment** — QEMU 11 creates phantom IDE-CD devices without it
-3. **No `via=pmu`** — causes "couldn't read big system resources" installer failures
-4. **256 MB RAM only** — 512 MB causes installer instability
-5. **No `-device screamer`** — Screamer audio is auto-connected in QEMU 11; adding it explicitly causes a fatal error
-6. **`cache=unsafe` on CD during install** — prevents read stalls on large sequential CD reads
-7. **bash 3.2 compatibility** — macOS ships bash 3.2; no `declare -A` or other bash 4+ features
-8. **Game folder has a ƒ character** — folder name is `Ferazel's Wand 1.0.2 ƒ` (U+0192); use globs not hardcoded paths
-9. **Game CD is plain HFS** — macOS Catalina+ dropped plain HFS support; the CD must be accessed via QEMU's IDE-CD driver
+1. **Raw disk format required** - QCOW2 fails mac99 ATA enumeration during OS install
+2. **Explicit IDE bus assignment** - QEMU 11 creates phantom IDE-CD devices without it
+3. **No `via=pmu`** - causes "couldn't read big system resources" installer failures
+4. **256 MB RAM only** - 512 MB causes installer instability
+5. **No `-device screamer`** - Screamer audio is auto-connected in QEMU 11; adding it explicitly causes a fatal error
+6. **`cache=unsafe` on CD during install** - prevents read stalls on large sequential CD reads
+7. **bash 3.2 compatibility** - macOS ships bash 3.2; no `declare -A` or other bash 4+ features
+8. **Game folder has a ƒ character** - folder name is `Ferazel's Wand 1.0.2 ƒ` (U+0192); use globs not hardcoded paths
+9. **Game CD is plain HFS** - macOS Catalina+ dropped plain HFS support; the CD must be accessed via QEMU's IDE-CD driver
 
 ---
 
 ## What NOT to Do
 
-- **Don't close QEMU with the red window button during setup** — hard-kills without flushing the disk, corrupts the image. Always use Special → Shut Down inside Mac OS 9.
-- **Don't increase RAM beyond 256 MB** — causes installer instability
+- **Don't close QEMU with the red window button during setup** - hard-kills without flushing the disk, corrupts the image. Always use Special → Shut Down inside Mac OS 9.
+- **Don't increase RAM beyond 256 MB** - causes installer instability
 - **Don't add `via=pmu`** to the machine flags
 - **Don't use QCOW2** format for the disk image
-- **Don't use `cp` for game files** — use `ditto` to preserve resource forks
+- **Don't use `cp` for game files** - use `ditto` to preserve resource forks
 
 ---
 
@@ -166,8 +166,8 @@ regarded as one of the best side-scrolling platformers on the classic Macintosh.
 ### Story
 
 The Habnabits are a race of tunnel-dwelling creatures skilled in magic, long living in
-peace underground. That peace is shattered when a horde of goblins — led by the insectoid
-Dread Queen Xichra and her Manditraki army — overruns their tunnels. You play as Ferazel,
+peace underground. That peace is shattered when a horde of goblins - led by the insectoid
+Dread Queen Xichra and her Manditraki army - overruns their tunnels. You play as Ferazel,
 the last of the free Habnabits, fighting through 23 levels across the Seven Lands of
 Teraknorn to vanquish Xichra and recover a stolen wand.
 
@@ -176,7 +176,7 @@ Teraknorn to vanquish Xichra and recover a stolen wand.
 The game is a side-scrolling platformer with RPG-lite elements. Ferazel can cling to
 walls and ceilings, opening up vertical traversal beyond the typical run-and-jump formula.
 Power comes from collecting magical crystals scattered through levels. A growing arsenal
-of spells and items — fireball, V-Blade, Tree Trunk, and more — unlocks as the game
+of spells and items - fireball, V-Blade, Tree Trunk, and more - unlocks as the game
 progresses.
 
 Boss fights emphasize logic over reflexes: each has a specific weakness to deduce rather
@@ -186,7 +186,7 @@ found, secrets discovered), and save points spaced to be forgiving but not trivi
 
 Later levels lean heavily on environmental hazards: high winds that push Ferazel backwards
 mid-jump, slippery ice, spiked floors, and deep water that damages enemies as much as you.
-Enemies also react to damage — goblins will attack aggressively but retreat when hurt,
+Enemies also react to damage - goblins will attack aggressively but retreat when hurt,
 and spiders back off after taking a few hits.
 
 **A gamepad is strongly recommended.** The game has full InputSprocket support, and
@@ -200,7 +200,7 @@ For a 1999 Macintosh title, the engine pushes well beyond the norm:
 - Particle system throughout: torch sparks, rain, weapon impacts, ceiling debris from
   spike hits, bat wing thermals for gliding
 - Realistic physics: floating logs bob when landed on, splash volume scales with drop height
-- Pseudo-3D perspective effects — the swinging mace balls grow as they approach
+- Pseudo-3D perspective effects - the swinging mace balls grow as they approach
 - 30 original musical tracks by Eric Speier, one per level, composed specifically for the game
 - Weather effects: thunderstorms with rain, wind, and lightning obscuring the screen
 
@@ -213,31 +213,31 @@ professional music. Rated 4.75/5 on Macintosh Garden.
 > *"Those that take the time to play through it will notice impressive particle and
 > lighting effects... Lighting examples include explosions and flickering torches that
 > make you think, 'Wow, the Mario brothers never did this.'"*
-> — Andy Largent, Macworld, April 2000
+> - Andy Largent, Macworld, April 2000
 
 ### Unused and cut content
 
 The Cutting Room Floor documents extensive content that didn't make the final release,
 discoverable in the game's resource fork data:
 
-- **Unused spells** — Ice Crystals and several others animate correctly but do nothing when cast
-- **Unused items** — a Vorpal Dirk (replaces the Dagger, deals double damage), a Mist Potion
+- **Unused spells** - Ice Crystals and several others animate correctly but do nothing when cast
+- **Unused items** - a Vorpal Dirk (replaces the Dagger, deals double damage), a Mist Potion
   (turns Ferazel into a ghost to pass through walls temporarily), and platinum coins worth
   100 silver each
-- **Cut characters** — forest nymphs named Taryn and Sara, with conversation portraits, that
+- **Cut characters** - forest nymphs named Taryn and Sara, with conversation portraits, that
   never appear in any level
-- **Unused music** — five tracks left out, likely because there weren't enough levels to use them
-- **Inaccessible rooms** — multiple levels contain hidden rooms with enemies and geometry that
+- **Unused music** - five tracks left out, likely because there weren't enough levels to use them
+- **Inaccessible rooms** - multiple levels contain hidden rooms with enemies and geometry that
   can only be reached with out-of-bounds techniques; several appear to be earlier versions of
   sections that were later redesigned
-- **Harry the Handsome Executive leftovers** — unsupported-processor warnings, copying machine
+- **Harry the Handsome Executive leftovers** - unsupported-processor warnings, copying machine
   save dialogs, and general preferences screens from Ben Spees' previous game still exist in
   the binary
-- **Developer notes** — sign strings left in the data include `"Insert a merchant or interesting
+- **Developer notes** - sign strings left in the data include `"Insert a merchant or interesting
   character in this alcove."` and `"This level is not complete and is here just so the map
   won't have big gaps in it."`
 
-Full documentation: [The Cutting Room Floor — Ferazel's Wand](https://tcrf.net/Ferazel%27s_Wand)
+Full documentation: [The Cutting Room Floor - Ferazel's Wand](https://tcrf.net/Ferazel%27s_Wand)
 
 ---
 

@@ -13,7 +13,7 @@ which operates under a community preservation ethos. Do not redistribute the gam
 ## Mac OS 9
 
 Mac OS 9 is proprietary software owned by **Apple Inc.** It was never open-sourced or
-released into the public domain. You need a valid license to use it — this typically means:
+released into the public domain. You need a valid license to use it - this typically means:
 
 - Owning an original retail copy of Mac OS 9, or
 - Owning a Mac that shipped with Mac OS 9 pre-installed.
