@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.PHONY: help setup vendor create-disk install-os install-game apply-patches launch clean reset-disk
+.PHONY: help bootstrap setup vendor create-disk install-os install-game apply-patches launch clean reset-disk
 
 help:
 	@echo ""
@@ -8,7 +8,14 @@ help:
 	@echo ""
 	@echo "After setup, just double-click FerazelsWand.app to play."
 	@echo ""
-	@echo "One-time setup (run once, in this order):"
+	@echo "QUICKSTART — run all setup steps in one command:"
+	@echo ""
+	@echo "  make bootstrap      Full pipeline: setup → vendor → OS install → game install → patch"
+	@echo ""
+	@echo "  (Two interactive QEMU windows open during bootstrap."
+	@echo "   The script resumes automatically each time you shut down Mac OS 9.)"
+	@echo ""
+	@echo "OR run each step individually:"
 	@echo ""
 	@echo "  1.  make setup          Install QEMU + unar via Homebrew (needs internet)"
 	@echo "  2.  make vendor         Bundle everything into vendor/ — no Homebrew after this"
@@ -34,6 +41,11 @@ help:
 	@echo ""
 	@echo "See docs/setup-guide.md for the full walkthrough."
 	@echo ""
+
+# ── Full bootstrap (all steps in sequence) ───────────────────────────────────
+
+bootstrap:
+	@bash scripts/bootstrap.sh
 
 # ── One-time setup ────────────────────────────────────────────────────────────
 
