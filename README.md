@@ -20,8 +20,9 @@ and move with the folder. Copy the whole repo to any ARM64 Mac and it just works
 
 - Apple Silicon Mac (M1 / M2 / M3 / M4)
 - macOS 13 Ventura or later
-- [Homebrew](https://brew.sh) - used once to install QEMU; not needed after `make vendor`
-- ~8 GB free disk space
+- Xcode Command Line Tools: `xcode-select --install`
+- [Homebrew](https://brew.sh) - used once during setup; not needed after `make vendor`
+- ~8 GB free disk space (plus ~800 MB temporary during `make vendor`)
 
 ### Files needed in `disks/`
 
@@ -37,8 +38,8 @@ Download and place these files before running the setup steps:
 ### Setup commands
 
 ```bash
-make setup          # 1. install QEMU + unar via Homebrew (one-time, needs internet)
-make vendor         # 2. bundle into vendor/ - no Homebrew needed after this
+make setup          # 1. install build deps via Homebrew (one-time, needs internet)
+make vendor         # 2. build QEMU with Screamer audio (~10 min) + bundle into vendor/
 make create-disk    # 3. create blank 6 GB Mac OS 9 disk image
 make install-os     # 4. INTERACTIVE (~10 min): install Mac OS 9
 make install-game   # 5. INTERACTIVE (~3 min):  run game CD installer, shut down
@@ -50,6 +51,12 @@ Steps 4 and 5 require brief interaction inside the emulated Mac OS 9 GUI.
 Each prints step-by-step instructions in the terminal before opening the QEMU window.
 Step 6 is fully automated - mounts the disk on macOS and applies patches without QEMU.
 
+**`make vendor` builds QEMU from source.** It clones the
+[mcayland/qemu screamer branch](https://github.com/mcayland/qemu/tree/screamer),
+compiles only the PowerPC target (~10 min on M2), bundles the binary with all dylib
+dependencies, and cleans up the ~800 MB build directory automatically. After it completes,
+the repo is fully self-contained with working audio.
+
 Alternatively, double-click **`Setup.command`** to run the full pipeline in a Terminal window.
 
 See **[docs/setup-guide.md](docs/setup-guide.md)** for the detailed walkthrough.
@@ -60,7 +67,7 @@ See **[docs/setup-guide.md](docs/setup-guide.md)** for the detailed walkthrough.
 
 | Component | Detail |
 |---|---|
-| **Emulator** | QEMU 11 `qemu-system-ppc`, machine type `mac99` (Power Mac G4) |
+| **Emulator** | QEMU 7.1.94 `qemu-system-ppc` (mcayland screamer fork), machine type `mac99` (Power Mac G4) |
 | **OS** | Mac OS 9.2.2 Universal |
 | **Game** | Ferazel's Wand v1.0.3, no-gamma patched executable |
 | **Portability** | QEMU + unar + dylibs + firmware vendored into `vendor/qemu/` |
@@ -106,17 +113,18 @@ game files is 0 bytes. Always use `ditto` (not `cp`) when copying game files on 
 
 ## QEMU Bring-Up Quirks
 
-Nine non-obvious issues discovered during bring-up, all handled in `config/qemu.conf.sh`:
+Ten non-obvious issues discovered during bring-up, all handled in `config/qemu.conf.sh`:
 
 1. **Raw disk format required** - QCOW2 fails mac99 ATA enumeration during OS install
-2. **Explicit IDE bus assignment** - QEMU 11 creates phantom IDE-CD devices without it
+2. **Explicit IDE bus assignment** - QEMU auto-creates phantom IDE-CD devices without it
 3. **No `via=pmu`** - causes "couldn't read big system resources" installer failures
 4. **256 MB RAM only** - 512 MB causes installer instability
-5. **No `-device screamer`** - Screamer audio is auto-connected in QEMU 11; adding it explicitly causes a fatal error
+5. **Screamer requires a custom QEMU build** - the AWACS Screamer codec (mac99's audio chip) was removed from upstream QEMU during the audio refactor and is absent from all Homebrew bottles. `make vendor` builds the [mcayland/qemu screamer branch](https://github.com/mcayland/qemu/tree/screamer) which adds it back. Wire it via `-audiodev coreaudio,id=snd0 -global screamer.audiodev=snd0`.
 6. **`cache=unsafe` on CD during install** - prevents read stalls on large sequential CD reads
 7. **bash 3.2 compatibility** - macOS ships bash 3.2; no `declare -A` or other bash 4+ features
 8. **Game folder has a ƒ character** - folder name is `Ferazel's Wand 1.0.2 ƒ` (U+0192); use globs not hardcoded paths
 9. **Game CD is plain HFS** - macOS Catalina+ dropped plain HFS support; the CD must be accessed via QEMU's IDE-CD driver
+10. **`zoom-to-fit` is not a command-line flag in QEMU 7.x** - use `-display cocoa,full-screen=on` to launch fullscreen; zoom-to-fit is available from the View menu at runtime
 
 ---
 
@@ -141,8 +149,9 @@ ferazels-wand-emulator/
 │   └── qemu.conf.sh          ← QEMU flags + 9 documented bring-up quirks
 ├── scripts/
 │   ├── bootstrap.sh          ← runs all setup steps in sequence
-│   ├── setup.sh              ← brew install qemu unar
-│   ├── vendor-qemu.sh        ← bundle binaries + dylibs into vendor/
+│   ├── setup.sh              ← brew install build deps (meson, ninja, pkg-config, qemu, unar)
+│   ├── build-qemu-screamer.sh ← build QEMU from source with Screamer audio + vendor it
+│   ├── vendor-qemu.sh        ← legacy: bundle Homebrew QEMU (no audio)
 │   ├── create-disk.sh        ← create blank raw disk image
 │   ├── install-os.sh         ← interactive: Mac OS 9 install session
 │   ├── install-game.sh       ← interactive: game CD installer session

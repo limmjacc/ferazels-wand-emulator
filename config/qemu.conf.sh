@@ -2,14 +2,14 @@
 # Shared QEMU configuration - source this from all scripts.
 # Prefers the self-contained vendored binary; falls back to Homebrew.
 #
-# ── QEMU 11 + mac99 + Mac OS 9.2.2 bring-up quirks ───────────────────────────
+# ── mac99 + Mac OS 9.2.2 bring-up quirks ─────────────────────────────────────
 #
 # 1. RAW disk format required.
 #    mac99's ATA Manager in Mac OS 9.2.2 fails to enumerate QCOW2 disks during
 #    installation. Raw format passes cleanly. All images use .img (not .qcow2).
 #
 # 2. Explicit IDE bus assignment required.
-#    QEMU 11 mac99 auto-creates phantom IDE-CD devices on ide.0 alongside the
+#    QEMU mac99 auto-creates phantom IDE-CD devices on ide.0 alongside the
 #    hard disk, causing Drive Setup to fail. Fix: assign every drive explicitly:
 #      -device ide-hd,bus=ide.0,unit=0   (hard disk)
 #      -device ide-cd,bus=ide.1,unit=0   (any CD-ROM)
@@ -21,10 +21,16 @@
 # 4. 256 MB RAM only - do not increase.
 #    512 MB causes installer instability. Game runs fine at 256 MB.
 #
-# 5. screamer audio removed in QEMU 11.
-#    In QEMU 8, audio for mac99 required -device screamer,audiodev=...
-#    In QEMU 11 Screamer is built into mac99 and auto-connects to the first
-#    audiodev. Adding -device screamer causes a fatal "not a valid device" error.
+# 5. Screamer audio requires a custom QEMU build (mcayland/qemu screamer branch).
+#    The AWACS Screamer codec is the audio chip in Power Mac G4. It is absent
+#    from all upstream QEMU releases (removed during the QEMU 6/7 audio
+#    refactor). The mcayland/qemu screamer branch adds it back. 'make vendor'
+#    builds and vendors this fork via scripts/build-qemu-screamer.sh.
+#    The screamer build is QEMU 7.1.94. Quirks specific to QEMU 11 (below) do
+#    not apply to this build but are preserved for reference.
+#    Wire the Screamer to CoreAudio via:
+#      -audiodev "coreaudio,id=snd0"
+#      -global "screamer.audiodev=snd0"
 #
 # 6. cache=unsafe on CD during Mac OS 9 installation.
 #    The installer reads large sequential blocks from CD. Without cache=unsafe,
@@ -43,6 +49,10 @@
 #    The CD image uses raw HFS with 1536-byte allocation blocks and no partition
 #    map. Modern macOS dropped plain HFS support. machfs (pip3) can read it;
 #    Mac OS 9 reads it natively as a CD-ROM via ide-cd.
+#
+# 10. Cocoa display: zoom-to-fit is not a command-line flag in QEMU 7.x.
+#     Use -display cocoa,full-screen=on to start fullscreen. Zoom-to-fit is
+#     available at runtime from the View menu inside the QEMU window.
 # ─────────────────────────────────────────────────────────────────────────────
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -97,8 +107,9 @@ QEMU_BASE_FLAGS=(
     -cpu    G4
     -device "ide-hd,bus=ide.0,unit=0,drive=hd0"   # explicit bus - quirk #2
     -drive  "id=hd0,file=${DISK_IMAGE},format=raw,if=none"
-    -display "cocoa,zoom-to-fit=on,full-screen=on"
-    -audiodev "coreaudio,id=snd0"              # no -device screamer - quirk #5
+    -display "cocoa,full-screen=on"             # zoom-to-fit is menu-only in QEMU 7 - quirk #10
+    -audiodev "coreaudio,id=snd0"              # Screamer audio - quirk #5
+    -global  "screamer.audiodev=snd0"          # wire Screamer to CoreAudio backend
     -usb
     -device  usb-mouse
     -device  usb-kbd

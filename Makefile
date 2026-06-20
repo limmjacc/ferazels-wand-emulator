@@ -17,8 +17,8 @@ help:
 	@echo ""
 	@echo "OR run each step individually:"
 	@echo ""
-	@echo "  1.  make setup          Install QEMU + unar via Homebrew (needs internet)"
-	@echo "  2.  make vendor         Bundle everything into vendor/ - no Homebrew after this"
+	@echo "  1.  make setup          Install build deps via Homebrew (needs internet)"
+	@echo "  2.  make vendor         Build QEMU with Screamer audio (~10 min) + bundle into vendor/"
 	@echo "  3.  make create-disk    Create a blank 6 GB Mac OS 9 disk image"
 	@echo ""
 	@echo "  Place these files in disks/ before continuing:"
@@ -53,7 +53,7 @@ setup:
 	@bash scripts/setup.sh
 
 vendor:
-	@bash scripts/vendor-qemu.sh
+	@bash scripts/build-qemu-screamer.sh
 
 create-disk:
 	@bash scripts/create-disk.sh
