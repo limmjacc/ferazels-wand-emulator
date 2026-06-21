@@ -174,6 +174,30 @@ with open(path, 'w') as f:
 print("  Patched: stretch_video=true on fullscreen launch")
 PYEOF
 
+# ── Step 3.6: patch cocoa.m for black letterbox/pillarbox background ──────────
+# By default the NSWindow background is macOS beige/gray. On widescreen displays
+# a 4:3 Mac OS 9 guest leaves pillarbox bars on the sides. Setting the window
+# background to black makes those bars match the classic fullscreen look.
+# (The fullscreen NSWindow already has this set; we mirror it for normalWindow.)
+
+echo ""
+echo "==> Patching cocoa.m: black window background..."
+python3 - "${COCOA_M}" <<'PYEOF'
+import sys
+path = sys.argv[1]
+with open(path) as f:
+    src = f.read()
+old = '        [normalWindow setAcceptsMouseMovedEvents:YES];\n        [normalWindow setTitle:@"QEMU"];\n        [normalWindow setContentView:cocoaView];\n        [normalWindow makeKeyAndOrderFront:self];\n        [normalWindow center];\n        [normalWindow setDelegate: self];'
+new = '        [normalWindow setBackgroundColor:[NSColor blackColor]]; /* black sidebar patch */\n        [normalWindow setAcceptsMouseMovedEvents:YES];\n        [normalWindow setTitle:@"QEMU"];\n        [normalWindow setContentView:cocoaView];\n        [normalWindow makeKeyAndOrderFront:self];\n        [normalWindow center];\n        [normalWindow setDelegate: self];'
+if old not in src:
+    print("  ERROR: patch target not found in cocoa.m - source may have changed")
+    sys.exit(1)
+patched = src.replace(old, new, 1)
+with open(path, 'w') as f:
+    f.write(patched)
+print("  Patched: black window background for pillarbox/letterbox bars")
+PYEOF
+
 # ── Step 4: configure ─────────────────────────────────────────────────────────
 
 echo ""
