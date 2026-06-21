@@ -67,8 +67,8 @@ INSTRUCTIONS
     -device "ide-hd,bus=ide.0,unit=0,drive=hd0" \
     -drive  "id=hd0,file=${DISK_IMAGE},format=raw,if=none" \
     -device "ide-cd,bus=ide.1,unit=0,drive=cd0" \
-    -drive  "id=cd0,file=${MACOS9_ISO},format=raw,if=none,media=cdrom,readonly=on,cache=unsafe" \
-    -display "cocoa,zoom-to-fit=on,full-screen=on" \
+    -drive  "id=cd0,file=${MACOS9_ISO},format=raw,if=none,media=cdrom,readonly=on,cache=unsafe,aio=threads" \
+    -display "cocoa" \
     -usb \
     -device  usb-mouse \
     -device  usb-kbd \
