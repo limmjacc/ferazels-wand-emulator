@@ -18,8 +18,8 @@
 #
 #  Prerequisites:
 #    - Place required disk images in disks/ before running (see README.md)
-#    - Homebrew must be installed (https://brew.sh)
 #    - Xcode Command Line Tools: xcode-select --install
+#    (Homebrew is installed automatically if not already present)
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 

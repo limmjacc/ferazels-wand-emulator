@@ -25,9 +25,13 @@ if [[ "$(uname -m)" != "arm64" ]]; then
 fi
 
 if [[ ! -x "${BREW}" ]]; then
-    echo "ERROR: Homebrew not found at ${BREW}."
-    echo "       Install it from https://brew.sh then re-run 'make setup'."
-    exit 1
+    echo "  Homebrew not found. Installing now (this may take a few minutes)..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if [[ ! -x "${BREW}" ]]; then
+        echo "ERROR: Homebrew installation failed or was not installed to ${BREW}."
+        echo "       Install it manually from https://brew.sh then re-run 'make setup'."
+        exit 1
+    fi
 fi
 echo "  Homebrew: $("${BREW}" --version | head -1)"
 echo ""
