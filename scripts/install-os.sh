@@ -46,10 +46,22 @@ cat <<'INSTRUCTIONS'
 
 INSTRUCTIONS
 
+# Use cache=unsafe on the hard disk during installation.
+# The installer updates the Apple Partition Map (disk drivers) at the end —
+# this write stalls without cache=unsafe. Not needed for normal gameplay.
 "${QEMU_BIN}" \
-    "${QEMU_BASE_FLAGS[@]}" \
+    "${QEMU_DATA_FLAGS[@]+"${QEMU_DATA_FLAGS[@]}"}" \
+    -M      mac99 \
+    -m      256 \
+    -cpu    G4 \
+    -device "ide-hd,bus=ide.0,unit=0,drive=hd0" \
+    -drive  "id=hd0,file=${DISK_IMAGE},format=raw,if=none,cache=unsafe" \
     -device "ide-cd,bus=ide.1,unit=0,drive=cd0" \
     -drive  "id=cd0,file=${MACOS9_ISO},format=raw,if=none,media=cdrom,readonly=on,cache=unsafe" \
+    -display "cocoa,full-screen=on" \
+    -usb \
+    -device  usb-mouse \
+    -device  usb-kbd \
     -boot d
 
 echo ""
