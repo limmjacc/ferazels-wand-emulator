@@ -127,29 +127,6 @@ fi
 ditto "${NOGAMMA_APP}" "${GAME_FOLDER}/Ferazel's Wand nogamma"
 echo "    Applied:  no-gamma executable → $(basename "${GAME_FOLDER}")"
 
-# ── Create desktop alias ──────────────────────────────────────────────────────
-# Place an alias on the Mac OS 9 desktop pointing to the patched executable so
-# players can launch the game directly without navigating into the game folder.
-
-echo ""
-echo "    Creating desktop alias..."
-DESKTOP_FOLDER="${MACOS9_VOLUME}/Desktop Folder"
-mkdir -p "${DESKTOP_FOLDER}"
-GAME_EXE="${GAME_FOLDER}/Ferazel's Wand nogamma"
-
-osascript - "${GAME_EXE}" "${DESKTOP_FOLDER}" <<'APPLESCRIPT' 2>/dev/null && \
-    echo "    Alias created: Ferazel's Wand on Mac OS 9 desktop" || \
-    echo "    NOTE: Could not create desktop alias (non-fatal - game still accessible from its folder)"
-on run argv
-    set gameExe to POSIX file (item 1 of argv)
-    set destFolder to POSIX file (item 2 of argv)
-    tell application "Finder"
-        set aliasFile to make new alias file to (gameExe as alias) at (destFolder as alias)
-        set name of aliasFile to "Ferazel's Wand"
-    end tell
-end run
-APPLESCRIPT
-
 # ── Done ─────────────────────────────────────────────────────────────────────
 
 echo ""
