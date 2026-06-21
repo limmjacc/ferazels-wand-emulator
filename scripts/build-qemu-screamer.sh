@@ -149,6 +149,31 @@ QEMU_BUILD="${QEMU_SRC}/build"
 
 echo "  Cloned: QEMU $(cat "${QEMU_SRC}/VERSION") with Screamer audio"
 
+# ── Step 3.5: patch cocoa.m for zoom-to-fit in fullscreen ─────────────────────
+# QEMU 7.1.94 has no zoom-to-fit CLI flag — it only exists as a View menu item.
+# The internal variable is `stretch_video` (a file-static bool). We set it to
+# true immediately after toggleFullScreen: so every fullscreen launch scales to
+# fill the display without any manual menu interaction.
+
+echo ""
+echo "==> Patching cocoa.m: zoom-to-fit in fullscreen..."
+COCOA_M="${QEMU_SRC}/ui/cocoa.m"
+python3 - "${COCOA_M}" <<'PYEOF'
+import sys
+path = sys.argv[1]
+with open(path) as f:
+    src = f.read()
+old = '        [controller toggleFullScreen: nil];\n    }'
+new = '        [controller toggleFullScreen: nil];\n        stretch_video = true; /* zoom-to-fit patch */\n    }'
+if old not in src:
+    print("  ERROR: patch target not found in cocoa.m - source may have changed")
+    sys.exit(1)
+patched = src.replace(old, new, 1)
+with open(path, 'w') as f:
+    f.write(patched)
+print("  Patched: stretch_video=true on fullscreen launch")
+PYEOF
+
 # ── Step 4: configure ─────────────────────────────────────────────────────────
 
 echo ""

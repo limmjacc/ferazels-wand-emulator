@@ -51,8 +51,8 @@
 #    Mac OS 9 reads it natively as a CD-ROM via ide-cd.
 #
 # 10. Cocoa display: zoom-to-fit is not a command-line flag in QEMU 7.x.
-#     Use -display cocoa,full-screen=on to start fullscreen. Zoom-to-fit is
-#     available at runtime from the View menu inside the QEMU window.
+#     Patched in build-qemu-screamer.sh: sets stretch_video=true immediately
+#     after toggleFullScreen: so every fullscreen launch fills the display.
 # ─────────────────────────────────────────────────────────────────────────────
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
