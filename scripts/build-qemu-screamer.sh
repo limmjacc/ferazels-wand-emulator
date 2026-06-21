@@ -336,31 +336,46 @@ else
 fi
 
 # ── Step 11: copy QEMU firmware ───────────────────────────────────────────────
-# The screamer build includes its own OpenBIOS and option ROMs in its build
-# bundle. We use these (not Homebrew's) so the firmware matches the binary.
-# Key file: openbios-ppc - the OpenFirmware implementation for mac99.
+# Two-phase firmware copy:
+#   Phase A: copy all option ROMs from Homebrew QEMU (provides vgabios, sgabios,
+#            efi-*.rom, etc. that are not in the screamer source tree).
+#   Phase B: overwrite with the screamer source tree's pc-bios/ files —
+#            critically openbios-ppc, which is a custom build that includes
+#            Screamer DBDMA device-tree entries. Using Homebrew's standard
+#            openbios-ppc silently breaks audio: Mac OS 9 detects the Screamer
+#            device but the DMA channels are never mapped, so no audio ever plays.
 
 echo ""
 echo "==> Copying QEMU firmware..."
-# ROM files in the screamer build bundle are symlinks pointing back into the
-# build tree. Use the Homebrew QEMU firmware instead - it contains the same
-# OpenBIOS and option ROMs and is already fully resolved on disk.
-# Critical for mac99: openbios-ppc (the OpenFirmware ROM that boots the machine).
 FIRMWARE_SRC="${BREW_PREFIX}/share/qemu"
 mkdir -p "${SHARE_DIR}/qemu"
 if [[ -d "${FIRMWARE_SRC}" ]]; then
     cp -r "${FIRMWARE_SRC}/." "${SHARE_DIR}/qemu/"
-    echo "  Firmware: $(du -sh "${SHARE_DIR}/qemu" | awk '{print $1}')"
-    if [[ ! -f "${SHARE_DIR}/qemu/openbios-ppc" ]]; then
-        echo "  ERROR: openbios-ppc missing after firmware copy. mac99 will not boot."
-        exit 1
-    fi
-    echo "  openbios-ppc: present"
+    echo "  Phase A: Homebrew option ROMs copied"
 else
     echo "  ERROR: Homebrew QEMU firmware not found at ${FIRMWARE_SRC}."
     echo "         Run 'brew install qemu' and retry."
     exit 1
 fi
+
+# Phase B: overwrite with screamer-specific firmware from the source tree
+SCREAMER_BIOS="${QEMU_SRC}/pc-bios"
+if [[ -d "${SCREAMER_BIOS}" ]]; then
+    find "${SCREAMER_BIOS}" -maxdepth 1 -type f | while read -r rom; do
+        cp "${rom}" "${SHARE_DIR}/qemu/"
+    done
+    echo "  Phase B: screamer pc-bios/ overlay applied (includes custom openbios-ppc)"
+else
+    echo "  WARNING: screamer pc-bios/ not found at ${SCREAMER_BIOS} - using Homebrew openbios-ppc"
+    echo "           Audio DMA will likely not work without the screamer-specific OpenBIOS."
+fi
+
+if [[ ! -f "${SHARE_DIR}/qemu/openbios-ppc" ]]; then
+    echo "  ERROR: openbios-ppc missing. mac99 will not boot."
+    exit 1
+fi
+echo "  openbios-ppc: $(du -h "${SHARE_DIR}/qemu/openbios-ppc" | awk '{print $1}') (screamer build)"
+echo "  Firmware total: $(du -sh "${SHARE_DIR}/qemu" | awk '{print $1}')"
 
 # ── Step 12: sign everything ──────────────────────────────────────────────────
 # Apple Silicon requires code signatures on executables and dylibs. We use

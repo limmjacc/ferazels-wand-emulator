@@ -15,8 +15,12 @@
 #      -device ide-cd,bus=ide.1,unit=0   (any CD-ROM)
 #    The mac99 machine exposes two macio-ide controllers: ide.0 and ide.1.
 #
-# 3. Do NOT use -M mac99,via=pmu.
-#    PMU causes "couldn't read big system resources" installer failures.
+# 3. via=pmu is required for gameplay but NOT for installation.
+#    The PMU routes Screamer DMA completion interrupts. Without via=pmu, Mac OS 9
+#    queues audio DMA but never receives the callback, producing silence.
+#    install-os.sh uses Homebrew QEMU 11 with its own flags (no via=pmu there
+#    to avoid "couldn't read big system resources" installer failures). All
+#    gameplay scripts (QEMU_BASE_FLAGS) use via=pmu.
 #
 # 4. 256 MB RAM only - do not increase.
 #    512 MB causes installer instability. Game runs fine at 256 MB.
@@ -102,7 +106,7 @@ fi
 
 QEMU_BASE_FLAGS=(
     "${QEMU_DATA_FLAGS[@]+"${QEMU_DATA_FLAGS[@]}"}"
-    -M      mac99                              # no via=pmu - quirk #3
+    -M      "mac99,via=pmu"                    # via=pmu required for Screamer DMA interrupts - quirk #3
     -m      256                                # 256 MB only - quirk #4
     -cpu    G4
     -device "ide-hd,bus=ide.0,unit=0,drive=hd0"   # explicit bus - quirk #2
