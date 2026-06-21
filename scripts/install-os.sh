@@ -24,23 +24,19 @@ cat <<'INSTRUCTIONS'
 
   ① Wait ~60 seconds for Mac OS 9 to boot from the installer CD.
 
-  ② The installer opens automatically and says "no volumes available".
-     This is normal - the blank disk has no partition table yet.
-     CLOSE or IGNORE the installer for now.
+  ② The installer opens automatically. A volume named "untitled" should
+     already be visible — the disk was pre-initialized by create-disk.sh.
+     If the installer says "no volumes found", see note ③ below.
 
-  ③ On the desktop, double-click the installer CD icon.
-     Open the Utilities folder inside.
-     Launch Drive Setup.
-
-  ④ Drive Setup lists your blank disk. Select it → click Initialize.
-     Accept the default HFS+ format. This writes an Apple Partition Map.
-     Quit Drive Setup when it finishes.
-
-  ⑤ Now run the Mac OS 9 Installer (from the CD or the open window).
-     The formatted volume now appears. Select it → click Install.
+     Select "untitled" → click Install (or Start).
      Installation takes 5–10 minutes.
 
-  ⑥ When the installer finishes: Special → Shut Down.
+  ③ [Only if "untitled" is NOT visible]: The pre-initialization failed.
+     Close the installer. On the desktop, open the CD → Utilities →
+     Drive Setup. Select the blank disk → Initialize (HFS+ format).
+     Quit Drive Setup, then re-run the Mac OS 9 Installer.
+
+  ④ When the installer finishes: Special → Shut Down.
      DO NOT close the QEMU window - that corrupts the disk image.
      The window closes automatically after Shut Down.
 
