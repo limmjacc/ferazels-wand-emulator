@@ -25,8 +25,8 @@ bash "${SCRIPT_DIR}/setup.sh"
 
 # ── Step 2: Bundle QEMU into vendor/ ─────────────────────────────────────────
 
-divider "Step 2 / 6 - Bundle QEMU into vendor/ (self-contained)"
-bash "${SCRIPT_DIR}/vendor-qemu.sh"
+divider "Step 2 / 6 - Build QEMU with Screamer audio + bundle into vendor/ (~10 min)"
+bash "${SCRIPT_DIR}/build-qemu-screamer.sh"
 
 # ── Step 3: Create blank disk ─────────────────────────────────────────────────
 
@@ -70,7 +70,7 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  All done! Ferazel's Wand is ready to play."
 echo ""
-echo "  Double-click FerazelsWand.app"
+echo "  Double-click Play.command"
 echo "  - or -"
 echo "  make launch"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
