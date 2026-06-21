@@ -1,20 +1,31 @@
 #!/usr/bin/env bash
-# Automated patch application - runs entirely on macOS, no Mac OS 9 needed.
+# ─────────────────────────────────────────────────────────────────────────────
+#  apply-patches.sh  —  Automated Patch Application
 #
-# After 'make install-game' (the CD installer session), this script:
-#   1. Mounts disks/macos9.img directly on macOS
-#   2. Uses unar to extract the v1.0.3 update .sit
-#   3. Uses unar to extract the no-gamma patched executable .sit
-#   4. Copies all extracted files into the game folder using ditto
-#      (ditto preserves Mac resource forks on HFS+ volumes)
-#   5. Unmounts cleanly
+#  Applies the v1.0.3 update and no-gamma patch to the installed game.
+#  Runs entirely on macOS — no QEMU, no Mac OS 9 interaction required.
 #
-# Why this works:
-#   macos9.img is an HFS+ volume that macOS can mount read-write.
-#   All game data files live in their resource forks (Classic Mac convention).
-#   ditto preserves resource forks when copying between HFS+ paths.
-#   unar (The Unarchiver CLI) extracts StuffIt archives with resource fork
-#   metadata stored as AppleDouble; ditto merges that into the HFS+ fork.
+#  After 'make install-game', this script:
+#    1. Mounts disks/macos9.img directly on macOS (hdiutil attach)
+#    2. Extracts the v1.0.3 update .sit archive using unar
+#    3. Extracts the no-gamma patched executable .sit archive using unar
+#    4. Copies all extracted files into the game folder using ditto
+#       (ditto preserves Mac resource forks on HFS+ volumes)
+#    5. Unmounts cleanly
+#
+#  Why ditto instead of cp:
+#    Classic Mac game data lives in resource forks (data fork is 0 bytes).
+#    unar extracts StuffIt archives with resource fork metadata in AppleDouble
+#    format; ditto merges that back into native HFS+ resource forks on the
+#    mounted volume. cp silently drops resource forks.
+#
+#  Why no-gamma:
+#    The standard v1.0.3 executable triggers a gamma screen-fade when using
+#    the dagger weapon. QEMU's gamma ramp API is unimplemented, causing an
+#    immediate crash. The no-gamma patch removes this effect entirely.
+#
+#  Usage: make apply-patches  (automated, no interaction required)
+# ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

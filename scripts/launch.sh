@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
-# Normal gameplay launch - boots Mac OS 9 from disks/macos9.img.
-# No CD attached. All saves write to macos9.img and persist between sessions.
+# ─────────────────────────────────────────────────────────────────────────────
+#  launch.sh  —  Ferazel's Wand Gameplay Launch
+#
+#  Boots Mac OS 9 from disks/macos9.img with the game CD attached.
+#  Uses the vendored screamer QEMU build (vendor/qemu/) for audio support.
+#  All saves write to macos9.img and persist between sessions.
+#
+#  Usage: make launch  (or run directly: bash scripts/launch.sh)
+#  For double-click launching, use Play.command instead.
+# ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

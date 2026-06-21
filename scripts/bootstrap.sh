@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
-# Full one-shot setup from a clean repo to a playable game.
+# ─────────────────────────────────────────────────────────────────────────────
+#  bootstrap.sh  —  Full One-Shot Setup Pipeline
 #
-# The two interactive QEMU sessions (install-os, install-game) block here.
-# The script resumes automatically when you shut down Mac OS 9 each time.
-# Everything else is fully automated.
+#  Runs all 6 setup steps in sequence from a clean repo to a playable game:
+#    Step 1: Install Homebrew dependencies (setup.sh)
+#    Step 2: Build QEMU with Screamer audio from source (build-qemu-screamer.sh)
+#    Step 3: Create blank 6 GB disk image (create-disk.sh)
+#    Step 4: Install Mac OS 9 - INTERACTIVE (install-os.sh)
+#    Step 5: Install Ferazel's Wand - INTERACTIVE (install-game.sh)
+#    Step 6: Apply v1.0.3 + no-gamma patches - automated (apply-patches.sh)
 #
-# Usage: make bootstrap
+#  Steps 4 and 5 open a QEMU window and require brief Mac OS 9 interaction.
+#  The script blocks until Mac OS 9 shuts down, then automatically resumes.
+#  All other steps run without input.
+#
+#  Usage: make bootstrap  (or double-click Setup.command)
+# ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

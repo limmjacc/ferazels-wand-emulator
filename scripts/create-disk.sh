@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
-# Creates a blank 6 GB raw disk image for Mac OS 9.
-# Raw format is required - see config/qemu.conf.sh quirk #1.
+# ─────────────────────────────────────────────────────────────────────────────
+#  create-disk.sh  —  Create Blank Mac OS 9 Disk Image
 #
-# The disk is left completely blank. Drive Setup runs inside QEMU during
-# install-os to write the Apple Partition Map. This is required because
-# install-os uses Homebrew QEMU 11 which initializes the disk correctly.
+#  Creates disks/macos9.img — a blank 6 GB raw disk image.
+#
+#  Raw format is required (not QCOW2): mac99's ATA Manager in Mac OS 9.2.2
+#  fails to enumerate QCOW2 disks during installation. See qemu.conf.sh quirk #1.
+#
+#  The disk is left completely blank (no partition table). Drive Setup runs
+#  inside QEMU during install-os to write the Apple Partition Map. This is
+#  intentional: install-os uses Homebrew QEMU 11, which handles disk init
+#  correctly without the macio-ide issues of the screamer build.
+#
+#  Usage: make create-disk
+# ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

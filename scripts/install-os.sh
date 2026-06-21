@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
-# Boot from Mac OS 9 ISO to install the OS onto disks/macos9.img.
-# This is an interactive session - follow the on-screen instructions below.
+# ─────────────────────────────────────────────────────────────────────────────
+#  install-os.sh  —  Interactive Mac OS 9 Installation Session
 #
-# Uses Homebrew QEMU 11 for installation — the screamer build (QEMU 7.1.94)
-# has a macio-ide regression that causes "Updating Apple hard disk drivers" to
-# hang indefinitely. QEMU 11 completes the install cleanly. The vendored
-# screamer build is used at runtime (gameplay) for audio.
+#  Boots from disks/macos9.iso (Mac OS 9.2.2 Universal installer) using
+#  Homebrew QEMU 11 and installs the OS onto disks/macos9.img.
+#
+#  Why Homebrew QEMU 11 instead of the vendored screamer build:
+#    The screamer build (QEMU 7.1.94) has a macio-ide regression that causes
+#    "Updating Apple hard disk drivers" to hang indefinitely during installation.
+#    Homebrew QEMU 11 completes the install cleanly. The vendored screamer build
+#    is used at runtime (Play.command / make launch) for audio support.
+#
+#  The CD drive uses cache=unsafe + aio=threads to prevent "Big Morsels" read
+#  failures — an intermittent error that occurs when the installer reads large
+#  sequential blocks from CD without async I/O.
+#
+#  Usage: make install-os  (interactive — follow on-screen instructions)
+# ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
