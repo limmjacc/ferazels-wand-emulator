@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  launch.sh  —  Ferazel's Wand Gameplay Launch
+#  launch.sh  -  Ferazel's Wand Gameplay Launch
 #
 #  Boots Mac OS 9 from disks/macos9.img with the game CD attached.
 #  Uses the vendored screamer QEMU build (vendor/qemu/) for audio support.

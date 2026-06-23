@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  apply-patches.sh  —  Automated Patch Application
+#  apply-patches.sh  -  Automated Patch Application
 #
 #  Applies the v1.0.3 update and no-gamma patch to the installed game.
-#  Runs entirely on macOS — no QEMU, no Mac OS 9 interaction required.
+#  Runs entirely on macOS - no QEMU, no Mac OS 9 interaction required.
 #
 #  After 'make install-game', this script:
 #    1. Mounts disks/macos9.img directly on macOS (hdiutil attach)

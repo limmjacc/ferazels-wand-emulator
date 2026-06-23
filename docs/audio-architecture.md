@@ -2,7 +2,7 @@
 
 ## Overview
 
-Mac OS 9 audio in this emulator is provided by the **Screamer** chip — Apple's internal name
+Mac OS 9 audio in this emulator is provided by the **Screamer** chip - Apple's internal name
 for the AWACS (Apple Workgroup Audio Controller System) codec used in Power Mac G4 hardware.
 Screamer is absent from all upstream QEMU releases. This project builds from Mark Cave-Ayland's
 `screamer` branch of mcayland/qemu, which adds it back.
@@ -53,7 +53,7 @@ All of these must be true simultaneously. Any one missing = silence.
 
 After a new build, boot Mac OS 9 and open Apple menu → Control Panels → Sound:
 
-- **Output tab should show "Spatializer Audio Laboratories"** — this confirms the
+- **Output tab should show "Spatializer Audio Laboratories"** - this confirms the
   screamer-specific openbios-ppc is active and the OF device tree correctly exposes
   the Screamer hardware. If it shows only "Built-in", the wrong openbios-ppc is loaded.
 - Volume slider should respond and play a preview tone when moved.
@@ -83,7 +83,7 @@ After booting, move the Sound control panel Alert volume slider, then Special �
 ls -lh /tmp/ferazel-audio-test.wav
 ```
 
-- **44 bytes** = WAV header only — Mac OS 9 sent zero audio data to QEMU. Check openbios-ppc
+- **44 bytes** = WAV header only - Mac OS 9 sent zero audio data to QEMU. Check openbios-ppc
   and via=pmu.
 - **> 1 KB** = audio data flowing from Mac OS 9 through Screamer to QEMU. If CoreAudio is
   still silent, the issue is in the macOS audio stack (permissions, device selection).
@@ -96,12 +96,12 @@ addresses (0x10 output, 0x12 input) so Mac OS 9's AWACS driver can find and prog
 
 Standard `openbios-ppc` from Homebrew QEMU 11 (or any upstream QEMU) has no such node.
 Without it, Mac OS 9 detects the Screamer device at the PCI level and shows "Built-in" in
-the Sound control panel, but the AWACS driver cannot set up DMA — so the audio pipeline
+the Sound control panel, but the AWACS driver cannot set up DMA - so the audio pipeline
 exists but is never activated.
 
 The build script (`scripts/build-qemu-screamer.sh`) uses a two-phase firmware copy:
 1. Copy all option ROMs from Homebrew (vgabios, sgabios, efi-*.rom, etc.)
-2. Overlay with the screamer source tree's `pc-bios/` — overwriting openbios-ppc with the
+2. Overlay with the screamer source tree's `pc-bios/` - overwriting openbios-ppc with the
    screamer-specific build
 
 ## The via=pmu Problem
@@ -146,5 +146,5 @@ developed and tested against that version.
 - The Apple Audio Extension (`AppleAudioExtension`) that ships with some QuickTime versions
   may crash on boot with the Screamer emulation. If extensions crash on startup, boot with
   extensions disabled (hold Shift at startup) and remove or disable it via Extensions Manager.
-- USB audio (`-device usb-audio`) is not a viable alternative — it freezes after a few seconds.
+- USB audio (`-device usb-audio`) is not a viable alternative - it freezes after a few seconds.
 - Screamer audio is not available in the `g3beige` machine type; mac99 only.

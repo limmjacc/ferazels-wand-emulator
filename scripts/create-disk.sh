@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  create-disk.sh  —  Create Blank Mac OS 9 Disk Image
+#  create-disk.sh  -  Create Blank Mac OS 9 Disk Image
 #
-#  Creates disks/macos9.img — a blank 6 GB raw disk image.
+#  Creates disks/macos9.img - a blank 6 GB raw disk image.
 #
 #  Raw format is required (not QCOW2): mac99's ATA Manager in Mac OS 9.2.2
 #  fails to enumerate QCOW2 disks during installation. See qemu.conf.sh quirk #1.

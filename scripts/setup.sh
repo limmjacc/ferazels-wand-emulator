@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  setup.sh  —  One-Time Dependency Installation
+#  setup.sh  -  One-Time Dependency Installation
 #
 # Installs via Homebrew:
 #   - qemu          Runtime libraries + qemu-img disk tool

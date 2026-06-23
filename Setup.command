@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  Setup.command  —  Ferazel's Wand One-Time Setup
+#  Setup.command  -  Ferazel's Wand One-Time Setup
 #
 #  Double-click this file in Finder to run the complete setup pipeline.
 #  A Terminal window opens and walks through all 6 steps automatically.

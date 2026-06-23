@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  install-os.sh  —  Interactive Mac OS 9 Installation Session
+#  install-os.sh  -  Interactive Mac OS 9 Installation Session
 #
 #  Boots from disks/macos9.iso (Mac OS 9.2.2 Universal installer) using
 #  Homebrew QEMU 11 and installs the OS onto disks/macos9.img.
@@ -12,10 +12,10 @@
 #    is used at runtime (Play.command / make launch) for audio support.
 #
 #  The CD drive uses cache=unsafe + aio=threads to prevent "Big Morsels" read
-#  failures — an intermittent error that occurs when the installer reads large
+#  failures - an intermittent error that occurs when the installer reads large
 #  sequential blocks from CD without async I/O.
 #
-#  Usage: make install-os  (interactive — follow on-screen instructions)
+#  Usage: make install-os  (interactive - follow on-screen instructions)
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  Play.command  —  Ferazel's Wand Launcher
+#  Play.command  -  Ferazel's Wand Launcher
 #
 #  Double-click this file in Finder to launch the game.
 #  Mac OS 9 boots in ~60 seconds. Open Ferazel's Wand nogamma from the disk.

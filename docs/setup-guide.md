@@ -26,7 +26,7 @@ Or run everything at once: **double-click `Setup.command`** (or `make bootstrap`
 - Apple Silicon Mac (M1 / M2 / M3 / M4)
 - macOS 13 Ventura or later
 - Xcode Command Line Tools: `xcode-select --install`
-- [Homebrew](https://brew.sh) — needed once for `make setup`; not required after `make vendor`
+- [Homebrew](https://brew.sh) - needed once for `make setup`; not required after `make vendor`
 - ~8 GB free disk space (plus ~800 MB temporary during build)
 
 ---
@@ -79,7 +79,7 @@ releases. The build:
 5. Ad-hoc signs everything for Apple Silicon
 6. Deletes the ~800 MB build directory
 
-After this step, `vendor/qemu/` is fully self-contained — copy to any ARM64 Mac.
+After this step, `vendor/qemu/` is fully self-contained - copy to any ARM64 Mac.
 
 ---
 
@@ -89,7 +89,7 @@ After this step, `vendor/qemu/` is fully self-contained — copy to any ARM64 Ma
 make create-disk
 ```
 
-Creates `disks/macos9.img` — a 6 GB blank raw disk image. Raw format is required;
+Creates `disks/macos9.img` - a 6 GB blank raw disk image. Raw format is required;
 QCOW2 causes Mac OS 9's ATA driver to fail device enumeration.
 
 ---
@@ -103,13 +103,13 @@ make install-os
 Opens a QEMU window booting from the Mac OS 9 installer ISO using Homebrew QEMU 11.
 The terminal prints step-by-step instructions. Summary:
 
-### 4a — Wait for boot (~60 seconds)
+### 4a - Wait for boot (~60 seconds)
 
 OpenBIOS initializes, then Mac OS 9 boots from CD. Wait for the full desktop.
 
-### 4b — Initialize the disk with Drive Setup
+### 4b - Initialize the disk with Drive Setup
 
-The installer opens automatically and says **"no volumes available"** — normal, the blank
+The installer opens automatically and says **"no volumes available"** - normal, the blank
 disk has no Apple Partition Map yet. Close the installer and do this first:
 
 1. Double-click the **installer CD** icon on the desktop
@@ -118,13 +118,13 @@ disk has no Apple Partition Map yet. Close the installer and do this first:
 4. Select the blank disk → click **Initialize** → accept HFS+ format
 5. Quit Drive Setup
 
-### 4c — Run the installer
+### 4c - Run the installer
 
 1. Re-open the Mac OS 9 Installer from the CD
 2. Select the formatted "untitled" volume as the install destination
-3. Click **Install** — takes 5–10 minutes
+3. Click **Install** - takes 5–10 minutes
 
-### 4d — Shut down cleanly
+### 4d - Shut down cleanly
 
 **Special → Shut Down** from the Mac OS 9 menu bar.
 
@@ -148,7 +148,7 @@ Opens QEMU with the Ferazel's Wand game CD attached. Only 4 clicks required:
 5. **Special → Shut Down**
 
 > The game uses Installer VISE (proprietary archive format). This is why installation
-> must happen inside Mac OS 9 — no macOS tool can extract Installer VISE archives.
+> must happen inside Mac OS 9 - no macOS tool can extract Installer VISE archives.
 
 ---
 
@@ -158,7 +158,7 @@ Opens QEMU with the Ferazel's Wand game CD attached. Only 4 clicks required:
 make apply-patches
 ```
 
-Fully automated — no QEMU, no Mac OS 9 interaction required. This script:
+Fully automated - no QEMU, no Mac OS 9 interaction required. This script:
 
 1. Mounts `disks/macos9.img` on macOS (`hdiutil attach`)
 2. Extracts `Ferazel's Wand 1.0.3 update.sit` with `unar`
@@ -188,11 +188,11 @@ All saves write to `disks/macos9.img` and persist between launches.
 
 On first boot, verify audio is working:
 
-1. **Apple menu → Control Panels → Memory** — ensure Virtual Memory is **On**
+1. **Apple menu → Control Panels → Memory** - turn Virtual Memory **On** if it isn't already
    (required for Screamer audio to function)
-2. **Apple menu → Control Panels → Sound** — Output tab should show
+2. **Apple menu → Control Panels → Sound** - Output tab should show
    "Spatializer Audio Laboratories" (confirms screamer-specific OpenBIOS is active)
-3. Move the Alert volume slider — you should hear a preview tone
+3. Move the Alert volume slider - you should hear a preview tone
 
 ---
 
@@ -213,8 +213,8 @@ Copy the folder to any ARM64 Mac. No Homebrew, no QEMU install, no dependencies.
 
 ## Obtaining Mac OS 9
 
-- [Macintosh Garden](https://macintoshgarden.org) — community preservation archive
-- [Internet Archive](https://archive.org) — search "Mac OS 9.2.2 Universal"
+- [Macintosh Garden](https://macintoshgarden.org) - community preservation archive
+- [Internet Archive](https://archive.org) - search "Mac OS 9.2.2 Universal"
 
 **Tested version:** Mac OS 9.2.2 Universal (579 MB ISO)
 
@@ -258,7 +258,7 @@ Run `make clean` first, then `make vendor`.
 **QEMU window closes immediately after boot**
 The `-no-reboot` flag means QEMU exits on Mac OS 9 crash. This can happen if the disk
 image was corrupted by a hard kill (red window button). Run `make reset-disk` and redo
-from Step 3 — the image must be rebuilt from scratch.
+from Step 3 - the image must be rebuilt from scratch.
 
 **Apple Audio Extension crashes on boot**
 Some QuickTime versions install an `AppleAudioExtension` that conflicts with Screamer

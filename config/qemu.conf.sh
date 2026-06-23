@@ -26,7 +26,7 @@
 #    512 MB causes installer instability. Game runs fine at 256 MB.
 #
 # 5. Screamer audio requires a custom QEMU build (mcayland/qemu screamer branch).
-#    The AWACS Screamer codec is the audio chip in Power Mac G4. It is absent
+#    The AWACS Screamer codec is the audio chip in Power Mac G4. Absent
 #    from all upstream QEMU releases (removed during the QEMU 6/7 audio
 #    refactor). The mcayland/qemu screamer branch adds it back. 'make vendor'
 #    builds and vendors this fork via scripts/build-qemu-screamer.sh.

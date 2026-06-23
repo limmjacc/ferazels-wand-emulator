@@ -119,7 +119,7 @@ for pkg in meson ninja pkg-config; do
     fi
 done
 
-# Ensure the QEMU runtime libraries are installed (needed by qemu-img and unar)
+# Make sure the QEMU runtime libraries are installed (needed by qemu-img and unar)
 echo ""
 echo "==> Ensuring QEMU runtime libraries are present..."
 if ! "${BREW}" list qemu &>/dev/null 2>&1; then
@@ -150,7 +150,7 @@ QEMU_BUILD="${QEMU_SRC}/build"
 echo "  Cloned: QEMU $(cat "${QEMU_SRC}/VERSION") with Screamer audio"
 
 # ── Step 3.5: patch cocoa.m for zoom-to-fit in fullscreen ─────────────────────
-# QEMU 7.1.94 has no zoom-to-fit CLI flag — it only exists as a View menu item.
+# QEMU 7.1.94 has no zoom-to-fit CLI flag - it only exists as a View menu item.
 # The internal variable is `stretch_video` (a file-static bool). We set it to
 # true immediately after toggleFullScreen: so every fullscreen launch scales to
 # fill the display without any manual menu interaction.
@@ -339,7 +339,7 @@ fi
 # Two-phase firmware copy:
 #   Phase A: copy all option ROMs from Homebrew QEMU (provides vgabios, sgabios,
 #            efi-*.rom, etc. that are not in the screamer source tree).
-#   Phase B: overwrite with the screamer source tree's pc-bios/ files —
+#   Phase B: overwrite with the screamer source tree's pc-bios/ files -
 #            critically openbios-ppc, which is a custom build that includes
 #            Screamer DBDMA device-tree entries. Using Homebrew's standard
 #            openbios-ppc silently breaks audio: Mac OS 9 detects the Screamer

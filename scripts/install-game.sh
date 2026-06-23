@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  install-game.sh  —  Interactive Game Installation Session
+#  install-game.sh  -  Interactive Game Installation Session
 #
 #  Boots Mac OS 9 with the Ferazel's Wand game CD attached and waits for the
 #  user to run the in-game installer, then shut down.
@@ -9,13 +9,13 @@
 #  during and after installation.
 #
 #  After this step, run 'make apply-patches' to apply the v1.0.3 update and
-#  no-gamma patch automatically from macOS — no more Mac OS 9 interaction needed.
+#  no-gamma patch automatically from macOS - no more Mac OS 9 interaction needed.
 #
 #  Why the install must happen inside Mac OS 9:
 #    The game CD uses Installer VISE, a proprietary archive format embedded in
 #    the installer application's data fork. No macOS tool can extract it.
 #
-#  Usage: make install-game  (interactive — follow on-screen instructions)
+#  Usage: make install-game  (interactive - follow on-screen instructions)
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 

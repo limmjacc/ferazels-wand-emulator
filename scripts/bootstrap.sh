@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-#  bootstrap.sh  —  Full One-Shot Setup Pipeline
+#  bootstrap.sh  -  Full One-Shot Setup Pipeline
 #
 #  Runs all 6 setup steps in sequence from a clean repo to a playable game:
 #    Step 1: Install Homebrew dependencies (setup.sh)

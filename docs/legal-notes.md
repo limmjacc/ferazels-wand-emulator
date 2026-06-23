@@ -17,7 +17,7 @@ Do not redistribute the game files.
 ## Mac OS 9
 
 Mac OS 9 is proprietary software owned by **Apple Inc.** It was never open-sourced or released
-into the public domain. You need a valid license to use it — this typically means owning an
+into the public domain. You need a valid license to use it - this typically means owning an
 original retail copy or a Mac that shipped with Mac OS 9 pre-installed.
 
 This project does not bundle Mac OS 9 and does not provide instructions for obtaining it
@@ -58,7 +58,7 @@ The `unar` binary bundled in `vendor/qemu/bin/` is an unmodified copy from Homeb
 
 ## This Project
 
-This emulator project is an independent, community-built tool. It is not affiliated with
+This is an independent, community-built tool. Not affiliated with
 Ambrosia Software, Ben Spees, or Apple Inc. No copyrighted game data, OS images, or firmware
 are bundled in this repository.
 
